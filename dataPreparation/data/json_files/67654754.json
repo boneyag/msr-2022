@@ -1,0 +1,27 @@
+{
+    "items": [
+      {
+        "tags": [
+          "regex",
+          "sed",
+          "freebsd"
+        ],
+        "answers": [
+          {
+            "answer_id": 67656159,
+            "question_id": 67654754,
+            "body": "<p>Apply <code>$'..'</code> only for the required portion:</p>\n<pre class=\"lang-sh prettyprint-override\"><code>$ s='test line     ! This part shall be enclosed with ESC commands'\n$ echo &quot;$s&quot; | sed 's/\\(!.*\\)/'$'\\033''E\\1'$'\\033F''/' | cat -v\ntest line     ^[E! This part shall be enclosed with ESC commands^[F\n</code></pre>\n<p>Not sure about other versions, but on <code>GNU sed</code>, you can use hexadecimal <code>\\xHH</code> and octal <code>\\oNNN</code> (note the <code>o</code>) escapes directly, so you can do:</p>\n<pre class=\"lang-sh prettyprint-override\"><code>$ echo &quot;$s&quot; | sed 's/\\(!.*\\)/\\x1BE\\1\\x1BF/' | cat -v\ntest line     ^[E! This part shall be enclosed with ESC commands^[F\n\n$ echo &quot;$s&quot; | sed 's/\\(!.*\\)/\\o033E\\1\\o033F/' | cat -v\ntest line     ^[E! This part shall be enclosed with ESC commands^[F\n</code></pre>\n"
+          }
+        ],
+        "is_answered": true,
+        "answer_count": 1,
+        "last_activity_date": 1621836941,
+        "question_id": 67654754,
+        "title": "How do I surround text beginning with ! until end of line with escape characters in sed?",
+        "body": "<p>I want to:</p>\n<ol>\n<li>prefix text beginning with a <code>!</code> character in a line with <code>ESC E</code> (being <code>ESC</code> octal code <code>\\033</code>)</li>\n<li>suffix above text with <code>ESC F</code> at the end of the line.</li>\n</ol>\n<p>This is what I have tried:</p>\n<pre><code>sed $'s/\\(!.*\\)/\\033E\\1\\033F/'\n</code></pre>\n<p>This is the error I get:</p>\n<pre><code>$ echo &quot;test line     ! This part shall be enclosed with ESC commands&quot; | sed $'s/\\(!.*\\)/\\033E\\1\\033F/'\nsh: Syntax error: Bad escape sequence\n</code></pre>\n<p>If I remove the <code>$</code> sign it can be seen that the text is detected and enclosed, but <code>sed</code> is not being able to insert the <code>ESC</code> characters.</p>\n<pre><code>$ echo &quot;test line     ! This part shall be enclosed with ESC commands&quot; | sed 's/\\(!.*\\)/\\033E\\1\\033F/'\ntest line     033E! This part shall be enclosed with ESC commands033F\n</code></pre>\n<p>I am using FreeBSD 12 <code>sed</code> which is expected to be a superset of the IEEE Std 1003.2 POSIC.2 specification according to the man page.</p>\n"
+      }
+    ],
+    "has_more": false,
+    "quota_max": 10000,
+    "quota_remaining": 9666
+  }

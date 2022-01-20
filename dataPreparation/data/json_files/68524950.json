@@ -1,0 +1,57 @@
+{
+    "tags": [
+        "python",
+        "django",
+        "django-models"
+    ],
+    "comments": [
+        {
+            "post_id": 68524950,
+            "comment_id": 121103359,
+            "body": "what is tenent?"
+        },
+        {
+            "post_id": 68524950,
+            "comment_id": 121103657,
+            "body": "Can you show your models, and what you have attempted so far to solve this?"
+        },
+        {
+            "post_id": 68524950,
+            "comment_id": 121105179,
+            "body": "JoranBeasley Tenant is someone who rents a flat, an apartment or any other place to live at. @bdbd I answered in edit, have a look if you&#39;ll have a chance. Thanks!"
+        },
+        {
+            "post_id": 68524950,
+            "comment_id": 121105261,
+            "body": "Have you considered a <a href=\"https://docs.djangoproject.com/en/3.2/topics/db/examples/one_to_one/#one-to-one-relationships\" rel=\"nofollow noreferrer\">one-to-one</a> relation with user model that can be null?"
+        },
+        {
+            "post_id": 68524950,
+            "comment_id": 121105672,
+            "body": "@bdbd I can&#39;t have user with null- every user has to be assigned to exactly 1 tenant with the same fields, not every tenant has to become user though. 1to1 with null=True doesn&#39;t solve the problem of how to use more fields of Tenant and assign them to more fields of user unfortunately."
+        },
+        {
+            "post_id": 68524950,
+            "comment_id": 121106709,
+            "body": "No I meant the foreign key to user from tenant can be null. So some tenant can have user, while some don&#39;t"
+        }
+    ],
+    "answers": [
+        {
+            "answer_id": 68526389,
+            "question_id": 68524950,
+            "body": "<p>You can use <code>to_field</code> to create fkeys to non-pk fields of another model, however, those fields need to have a unique constraint (i.e. <code>unique=True</code>) - which seems unlikely for name/surname.</p>\n<p>It sounds like you want a transparent access from the User model to the Tenant models fields, and that is not possible.</p>\n<p>You can create a fkey from User to Tenant:</p>\n<pre><code>class User(models.Model):\n    tenant = models.OneToOneField(Tenant, null=True, blank=True, related_name='user')\n    ...\n</code></pre>\n<p>and then access the fields with</p>\n<pre><code>user = User.objects.get(...)\nuser.tenant.surname\n</code></pre>\n<p>to keep the fields in sync you can override the <code>save()</code> method:</p>\n<pre><code>class Tenant(...)\n    ...\n    def save(self, *args, **kwargs):\n        if self.user:\n             self.user.last_name = self.surname\n             ...\n             self.user.save()\n        super().save(*args, **kwargs)\n</code></pre>\n<p>aside: <code>null=True</code> indicates that the database should allow null in the field, <code>blank=True</code> says that the field can be empty in the admin interface. You should probably have <code>null=True, blank=True</code> in most cases.</p>\n"
+        },
+        {
+            "answer_id": 68527197,
+            "question_id": 68524950,
+            "body": "<p>I would approach it in a way that the foreign key is in <code>Tenant</code>, instead of <code>User</code>, and define it as a nullable <a href=\"https://docs.djangoproject.com/en/3.2/topics/db/examples/one_to_one/\" rel=\"nofollow noreferrer\"><code>one-to-one</code></a>. This way you keep your <code>User</code> model free of foreign keys:</p>\n<pre class=\"lang-py prettyprint-override\"><code>class Tenant(models.Model):\n    user = models.OneToOneField(\n        User,\n        related_name='tenant',\n        on_delete=models.CASCADE,\n        null=True,\n        blank=True,\n        default=None,\n    )\n</code></pre>\n<p>Then to create the related user, you can add a method in your <code>Tenant</code> model like so:</p>\n<pre class=\"lang-py prettyprint-override\"><code>class Tenant(models.Model):\n    ...\n    def create_user(self):\n        if not self.user:\n            user = User.objects.create(\n                first_name=self.name,\n                last_name=self.surname,\n                ...\n            )\n            self.user = user\n            self.save()\n</code></pre>\n<p>Have a look at the example from the docs <a href=\"https://docs.djangoproject.com/en/3.2/topics/auth/customizing/#extending-the-existing-user-model\" rel=\"nofollow noreferrer\">here</a>.</p>\n"
+        }
+    ],
+    "is_answered": true,
+    "answer_count": 2,
+    "last_activity_date": 1627385193,
+    "question_id": 68524950,
+    "title": "create django user based on existing model object",
+    "body": "<p>I'm working on Property Management django app where my base model is <strong>Tenant</strong> with all basic info like name, surname, email etc. Willing tenants will be able to create <strong>user account</strong> so they can log in and book Gym/Cinema, but not all Tenants will need to have user account. My problem is:</p>\n<p>How can I <strong>create new user accounts</strong> based on <strong>existing</strong> Tenant objects? Obviously user will have Tenant ForeignKey but how can I extract Tenant.name, Tenant.surname etc to more than 1 field in my user model?</p>\n<p>ForeignKey only gives me reference to object but can I somehow access certain fields of that object during creation of new user so I make sure that Tenant.email is the same as user.email?</p>\n<p><strong>Edit</strong></p>\n<pre><code>tenancy = (('Tenant', 'Tenant'),('Owner', 'Owner'), ('Other', 'Other'))\n\nclass Tenant(models.Model):\n\n    name          = models.CharField(max_length=15, null=True, blank=False)\n    surname       = models.CharField(max_length=30, null=True, blank=False)\n    email         = models.EmailField(max_length=50, unique=True)\n    phone_number  = models.CharField(max_length=20, null=True, blank=True, unique=True)\n    flat          = models.ForeignKey(Flat, on_delete=models.PROTECT)\n    status        = models.CharField(max_length=10, choices=tenancy, null=True, blank=False)\n    stay_length   = models.CharField(max_length=20, null=True, blank=False)\n    pet_licence   = models.CharField(max_length=20, null=True, blank=False)\n    additional_notes= models.TextField(max_length=300, blank=True)\n    date_added    = models.DateField(auto_now_add=True, null=True)\n    moved_out     = models.BooleanField(default=False)\n    date_moved_out= models.DateField(auto_now_add=False, null=True)\n\n    class Meta:\n        unique_together = ('name', 'surname',)\n\n\n    def __str__(self):\n        return f'{self.name} {self.surname}' \n</code></pre>\n<p>Now I'd like to create user account model where name, surname, email, phone_number and flat will be ForeignKeys of Tenant model. Is it even possible to have 4 ForeignKeys from 1 object populating new model?</p>\n<p>I've tried playing around with ForeignKey.limit_choices_to, ForeignKey.related_name, ForeignKey.to_field (this was close but field related to has to be unique which doesn't work for my case) but everything gives errors. I just want to find out if it's even possible that more than 1 ForeignKey of 1 object can be directed to multiple different fields of new model object.</p>\n"
+}

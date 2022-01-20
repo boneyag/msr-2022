@@ -1,0 +1,41 @@
+{
+    "tags": [
+        "java",
+        "regex"
+    ],
+    "comments": [
+        {
+            "post_id": 68677935,
+            "comment_id": 121371658,
+            "body": "You can&#39;t use a regex to do arithmetic&lt;sup&gt;1&lt;/sup&gt;.  You shouldn&#39;t use a regex to parse date / time values.   Use <code>DateTimeFormater</code> to parse and unparse dates, and then perform the calculations using the <code>java.time</code> APIs."
+        },
+        {
+            "post_id": 68677935,
+            "comment_id": 121371740,
+            "body": "Short answer: don&#39;t Long answer: regex are ideally compiled ahead of time. Even if you want to jump through all the hoops, you&#39;d need to compile them over and over during run-time. I assume you have a DTO, then just set your field to a proper type, such as LocalDate."
+        },
+        {
+            "post_id": 68677935,
+            "comment_id": 121371832,
+            "body": "&lt;sup&gt;1&lt;/sup&gt;  - Certainly not a single regex.  You might be able to do arithmetic with a horrendously long and convoluted sequence of regexes ... but you would be nuts to try ..."
+        },
+        {
+            "post_id": 68677935,
+            "comment_id": 121372273,
+            "body": "So you need a regex to check whether a given date string from the database falls between 2021-02-01 and 2021-08-01? Heavy\u2026"
+        }
+    ],
+    "answers": [
+        {
+            "answer_id": 68678346,
+            "question_id": 68677935,
+            "body": "<h2>java.time</h2>\n<p>Use java.time, the modern Java date and time API, for your date work. Use no regular expressions and no strings (except for presentation to the user and the like).</p>\n<pre><code>    LocalDate sixMonthsAgo = LocalDate.now(ZoneId.systemDefault()).minusMonths(6);\n    System.out.println(sixMonthsAgo);\n</code></pre>\n<p>Output when I ran just now in my time zone:</p>\n<blockquote>\n<p>2021-02-06</p>\n</blockquote>\n<h2>A regular expression</h2>\n<blockquote>\n<p>my framework will only accpet a regex like this\n<code>&quot;connect.check.condition&quot;:&quot;MY_REGEX&quot;</code></p>\n</blockquote>\n<p>I have embarked on a piece of Java code to build such a regular expression. I will leave it to yourself to finish it.</p>\n<pre><code>    // The regex will consist of a number of smaller regexs joined by | (or)\n    StringJoiner regexJoiner = new StringJoiner(&quot;|&quot;);\n\n    // In the year after 6 months ago\n    int year = sixMonthsAgo.getYear();\n    int followingYear = year + 1;\n    regexJoiner.add(String.format(&quot;%4d-\\\\d{2}-\\\\d{2}&quot;, followingYear));\n    \n    // In a month with a higher first digit (so 10, 11 or 12 when six months ago was none of those)\n    int firstDigitOfMonth = sixMonthsAgo.getMonthValue() / 10;\n    int followingFirstDigitOfMonth = firstDigitOfMonth + 1;\n    regexJoiner.add(String.format(&quot;%4d-%1d\\\\d-\\\\d{2}&quot;, year, followingFirstDigitOfMonth));\n    \n    // In a month with the same first digit and a higher second digit;\n    // only if month is not already 9.\n    int followingSecondDigitOfMonth = sixMonthsAgo.getMonthValue() % 10 + 1; // overl\u00f8b 9 -&gt; 10\n    if (followingSecondDigitOfMonth &lt; 10) {\n        regexJoiner.add(String.format(&quot;%4d-%1d[%1d-9]-\\\\d{2}&quot;, year, firstDigitOfMonth, followingSecondDigitOfMonth));\n    }\n    \n    System.out.println(regexJoiner.toString());\n</code></pre>\n<p>Output so far is:</p>\n<blockquote>\n<p>2022-\\d{2}-\\d{2}|2021-1\\d-\\d{2}|2021-0[3-9]-\\d{2}</p>\n</blockquote>\n<p><code>2022-\\d{2}-\\d{2}</code> will accept any date in 2022. Not relevant in this case, but will be once we get into the first half of next year. <code>2021-1\\d-\\d{2}</code> accepts a date in the range 2021-10-01 through 2021-12-31, again not relevant today, but will be at other times of year. <code>2021-0[3-9]-\\d{2}</code> accepts dates from March this year and later.</p>\n<p>You need to add the cases of the same month where either the first digit of the day of month is higher or it\u2019s the same and the second digit higher. In your example the former will cover 2021\u201302-10 through the end of February while the latter covers February 1 through 9.</p>\n<h2>Link</h2>\n<p><a href=\"https://docs.oracle.com/javase/tutorial/datetime/\" rel=\"nofollow noreferrer\">Oracle tutorial: Date Time</a> explaining how to use java.time.</p>\n"
+        }
+    ],
+    "is_answered": true,
+    "answer_count": 1,
+    "last_activity_date": 1628249385,
+    "question_id": 68677935,
+    "title": "java regex - For pick the date before 6 months",
+    "body": "<p>I want to put a regex pattern for passing a date variable like the date before 6 months from now.</p>\n<p>The format will be: <code>yyyy-mm-dd</code></p>\n<p>Because we won't want to set the date variable in the properties on daily basis.</p>\n<p><strong>Background:</strong> We are using a framework to read data from the database, that framework needs to read the last 6 month's data, so they accept a regex pattern to check the condition. If possible to use the regex pattern then its easy for us since its picking the date dynamically from regex.</p>\n<p>EX: today's data <code>2021-08-01</code></p>\n<p>The regex should return <code>2021-02-01</code></p>\n"
+}

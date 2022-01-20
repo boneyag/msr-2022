@@ -1,0 +1,50 @@
+{
+    "items": [
+      {
+        "tags": [
+          "python",
+          "django",
+          "serialization",
+          "django-rest-framework"
+        ],
+        "comments": [
+          {
+            "post_id": 50994516,
+            "comment_id": 88984051,
+            "body": "your headline and question contradicts!"
+          }
+        ],
+        "answers": [
+          {
+            "answer_id": 50995397,
+            "question_id": 50994516,
+            "body": "<p>class/models are serialized into an OrderedDict type to be consumed by the <code>Response</code> method through this import <code>from rest_framework.response import Response</code> in combination with Django Rest Framework Views. It will typically return the data in a content-type that is either assigned at runtime through the <code>DEFAULT_RENDERER_CLASSES</code> project setting, assigned through a serializer property that is passed on initialization, or will be determined by the <code>Accept</code> header sent during the request. Details can be found in the DRF documentation at <a href=\"http://www.django-rest-framework.org/api-guide/renderers/\" rel=\"nofollow noreferrer\">http://www.django-rest-framework.org/api-guide/renderers/</a>.</p>\n<p>Thus, calling <code>Response(BentoSerializer(obj).data)</code> should return JSON formatted data to the client when passed through a view such as APIView, or a route on a ModelViewSet.</p>\n<p>However, you can also just <code>import json</code> and call <code>json.dumps(BentoSerializer(obj).data)</code> and the desired JSON will be output. I tested this with my own serializers in the django shell.</p>\n<h1>EDIT</h1>\n<p>Note that you cannot simply dump a datetime... You will likely end up having to write a patch to convert datetime and date objects to the format you expect.</p>\n<p>eg.</p>\n<pre><code>def json_dt_patch(o):\n    import datetime\n    if isinstance(o, datetime.date) or isinstance(o, datetime.datetime):\n        return o.strftime(&quot;%Y/%m/%d %H:%M:%S&quot;)\n    return o\n\nimport json\n\njson.dumps(data, default=json_dt_patch)\n</code></pre>\n"
+          },
+          {
+            "answer_id": 62308563,
+            "question_id": 50994516,
+            "body": "<p>While getting Ordered Dict from serializer validator you can convert it easily to the full form of Dict like JSONRenderer. This is usually returned in nested serializers.</p>\n\n<pre><code>    serializer = XXXSerializer(data=request.data)\n    serializer.is_valid(raise_exception=True)\n    payload = loads(dumps(serializer.data))\n    print(payload)\n</code></pre>\n\n<p>From </p>\n\n<pre><code>{'connection_alias': 'dev', 'payment_gateway_type': 'Stripe', 'restaurant_id': 'STRIPE_SANDBOX_TEST', 'card_info': OrderedDict([('card_type', 'VISA'), ('card_number', 'xxxxx'), ('card_expiry_month', 'xx'), ('card_expiry_year', 'xx'), ('card_cvc', 'xxx'), ('cardholder_name', 'xxxxxx')])\n</code></pre>\n\n<p>To    </p>\n\n<pre><code>{'connection_alias': 'dev', 'payment_gateway_type': 'Stripe', 'restaurant_id': 'STRIPE_SANDBOX_TEST', 'card_info': {'card_type': 'VISA', 'card_number': 'xxxxxxxxx', 'card_expiry_month': 'xx', 'card_expiry_year': 'xx', 'card_cvc': 'xxx', 'cardholder_name': 'xxxxxx'}}\n</code></pre>\n"
+          },
+          {
+            "answer_id": 66201769,
+            "question_id": 50994516,
+            "body": "<p>This is addendum to @NicholasClaudeLeBlanc's answer.</p>\n<p>I couldn't get <code>json.dumps</code> to work in my context.  The actual JSON renderer used by django-rest-framework can be obtained like this:</p>\n<pre><code>from rest_framework.renderers import JSONRenderer\nrenderer = JSONRenderer()\nrenderer.render\n</code></pre>\n<p><a href=\"https://www.django-rest-framework.org/api-guide/renderers/\" rel=\"nofollow noreferrer\">renderer's documentation</a></p>\n"
+          },
+          {
+            "answer_id": 66239950,
+            "question_id": 50994516,
+            "body": "<p>you can use:</p>\n<pre><code>class BentoSerializer(ModelSerializer):\n    zones = SerializerMethodField()\n    lead_zone = SerializerMethodField()\n\n    def get_zones(self, obj):\n        zone_data = ZoneSerializer(obj.zones, many=True)\n        data_list = []\n        for i in zone_data.data:\n            data_list.append(dict(i))\n        return data_list\n\n    def get_lead_zone(self, obj):\n\n        lead_zone_data = ZoneSerializer(obj.lead_zone, many=True)\n        data_list = []\n        for i in lead_zone_data.data:\n            data_list.append(dict(i))\n        return data_list\n\n    class Meta:\n        model = Bento\n        fields = ('lead_zone', 'zones', )\n</code></pre>\n"
+          }
+        ],
+        "is_answered": true,
+        "answer_count": 4,
+        "last_activity_date": 1628166853,
+        "question_id": 50994516,
+        "title": "Django Rest Framework to return dicts instead of OrderedDicts",
+        "body": "<p>I have a serializer with two attached <code>SerializerMethodField</code> fields:</p>\n\n<pre><code>class BentoSerializer(ModelSerializer):\n    zones = SerializerMethodField()\n    lead_zone = SerializerMethodField()\n\n    def get_zones(self, obj):\n        zone_queryset = obj.get_zones()\n        return ZoneSerializer(zone_queryset, many=True).data\n\n    def get_lead_zone(self, obj):\n        zone_queryset = obj.get_lead_zone()\n        return ZoneSerializer(zone_queryset).data\n\n    class Meta:\n        model = Bento\n        fields = ('lead_zone', 'zones', )\n</code></pre>\n\n<p>I need the data coming out of the serializer to be nested JSON (the ZoneSerializer contains similar <code>SerializerMethodField</code>s of its own, alongside normal model fields) but instead it comes out as an OrderedDict.</p>\n\n<p>Is there a way to configure the serializer such that <code>BentoSerializer(obj).data</code> return nested JSON, should I be recursively turning the OrderedDicts into dicts, or is there some other serializer method I don't know about for getting non-ordered data?</p>\n\n<p>Many thanks!</p>\n\n<p>PS: Example data currently coming from a factory object sent through the serializer:</p>\n\n<pre><code>[OrderedDict([('order', 1), ('columns', [OrderedDict([('order', 1), ('blocks', [OrderedDict([('order', 1), ('block_type', 'Text'), ('blockcontent', 'Cum inventore sed fugit aliquam doloribus. Alias exercitationem odit asperiores rerum qui aperiam cum fugit.'), ('heading', 'Adipisci possimus dolore assumenda sapiente velit amet odio doloremque.')])]), ('sticky', False), ('weight', 12), ('is_slideshow', False)])]), ('has_background_image', False), ('is_lead', False), ('is_slideshow', False), ('background_image', None), ('background_treatment', 'dark')])]\n&lt;class 'rest_framework.utils.serializer_helpers.ReturnList'&gt;\n{'lead_zone': {'background_image': None,\n               'background_treatment': 'dark',\n               'columns': [OrderedDict([('order', 1), ('blocks', [OrderedDict([('order', 1), ('block_type', 'Image'), ('blockcontent', '/media/media/2018/06/22/adatestfile_SfZMYPw.png'), ('heading', 'Reprehenderit officiis aliquid inventore enim quibusdam inventore beatae.')])]), ('sticky', False), ('weight', 12), ('is_slideshow', False)])],\n               'has_background_image': False,\n               'is_lead': True,\n               'is_slideshow': False,\n               'order': 1},\n 'zones': [OrderedDict([('order', 1), ('columns', [OrderedDict([('order', 1), ('blocks', [OrderedDict([('order', 1), ('block_type', 'Text'), ('blockcontent', 'Cum inventore sed fugit aliquam doloribus. Alias exercitationem odit asperiores rerum qui aperiam cum fugit.'), ('heading', 'Adipisci possimus dolore assumenda sapiente velit amet odio doloremque.')])]), ('sticky', False), ('weight', 12), ('is_slideshow', False)])]), ('has_background_image', False), ('is_lead', False), ('is_slideshow', False), ('background_image', None), ('background_treatment', 'dark')])]}\n</code></pre>\n"
+      }
+    ],
+    "has_more": false,
+    "quota_max": 10000,
+    "quota_remaining": 9649
+  }

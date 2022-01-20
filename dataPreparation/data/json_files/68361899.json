@@ -1,0 +1,26 @@
+{
+    "items": [
+      {
+        "tags": [
+          "json",
+          "postgresql"
+        ],
+        "answers": [
+          {
+            "answer_id": 68361939,
+            "question_id": 68361899,
+            "body": "<p>You can use the <code>?|</code> <a href=\"https://www.postgresql.org/docs/current/functions-json.html\" rel=\"nofollow noreferrer\">operator</a> for that. But as you are using <code>json</code> and not the recommended <code>jsonb</code> type, you need to cast your column:</p>\n<pre><code>select *\nfrom the_table\nwhere (value::jsonb -&gt; 'value') ?| array['one', 'four']\n</code></pre>\n"
+          }
+        ],
+        "is_answered": true,
+        "answer_count": 1,
+        "last_activity_date": 1626177444,
+        "question_id": 68361899,
+        "title": "Postgres searching through arrays within JSON",
+        "body": "<p>Many similar questions, but unfortunately non helped me solve my problem. I tried to &amp;&amp; and @&gt; and similar, but no success.</p>\n<p>I have a postgres DB with a table, that has a &quot;value&quot; column typed &quot;json&quot;. All rows have the same basic structure, a simple JSON object, with the att &quot;value&quot; holding an array of strings:</p>\n<pre><code>{\n   value: ['one', 'two', 'three']\n}\n</code></pre>\n<p>I need to make a query accepting an array of strings and returns all the rows, in which the value array and the passed array of strings have at least one common element.</p>\n<p>Following the upper example, if I send ['one', 'four'], it should return the row with value: ['one', 'two', 'three'], since there is an intersection - 'one'.</p>\n<p>If I send the array ['four', 'five', 'six'], it will not return this row.</p>\n"
+      }
+    ],
+    "has_more": false,
+    "quota_max": 10000,
+    "quota_remaining": 9640
+  }

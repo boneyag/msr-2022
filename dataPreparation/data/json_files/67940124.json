@@ -1,0 +1,38 @@
+{
+    "items": [
+      {
+        "tags": [
+          "json",
+          "jq"
+        ],
+        "comments": [
+          {
+            "post_id": 67940124,
+            "comment_id": 120085108,
+            "body": "I&#39;d use <code>map(...)</code> instead of <code>[.[] | ...]</code>. Though not sure what you mean by <i>better</i>; better how?"
+          },
+          {
+            "post_id": 67940124,
+            "comment_id": 120085234,
+            "body": "@oguzismail shorter or more readable."
+          }
+        ],
+        "answers": [
+          {
+            "answer_id": 67940712,
+            "question_id": 67940124,
+            "body": "<p>I can think of two ways to do this with less code and both are variants of what you have already figured out on your own.</p>\n<ol>\n<li>\n<pre><code> map(.a as $a | .b |= map(select(. == $a)))\n</code></pre>\n</li>\n<li>\n<pre><code> del(.[] | .a as $a | .b[] | select(. != $a))\n</code></pre>\n</li>\n</ol>\n"
+          }
+        ],
+        "is_answered": true,
+        "answer_count": 1,
+        "last_activity_date": 1623429964,
+        "question_id": 67940124,
+        "title": "Modify arrays within objects in jq",
+        "body": "<p>I have an array of objects, and want to filter the arrays in the <code>b</code> property to only have elements matching the <code>a</code> property of the object.</p>\n<pre class=\"lang-json prettyprint-override\"><code>[\n  {\n    &quot;a&quot;: 3,\n    &quot;b&quot;: [\n      1,\n      2,\n      3\n    ]\n  },\n  {\n    &quot;a&quot;: 5,\n    &quot;b&quot;: [\n      3,\n      5,\n      4,\n      3,\n      5\n    ]\n  }\n]\n</code></pre>\n<p>produces</p>\n<pre class=\"lang-json prettyprint-override\"><code>[\n  {\n    &quot;a&quot;: 3,\n    &quot;b&quot;: [\n      3\n    ]\n  },\n  {\n    &quot;a&quot;: 5,\n    &quot;b&quot;: [\n      5,\n      5\n    ]\n  }\n]\n</code></pre>\n<p>Currently, I've arrived at</p>\n<pre><code>[.[] | (.a as $a | .b |= [.[] | select(. == $a)])]\n</code></pre>\n<p>That works, but I'm wondering if there's a better (shorter, more readable) way.</p>\n"
+      }
+    ],
+    "has_more": false,
+    "quota_max": 10000,
+    "quota_remaining": 9638
+  }

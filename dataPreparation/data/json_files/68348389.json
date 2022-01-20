@@ -1,0 +1,58 @@
+{
+  "tags": [
+    "django",
+    "postgresql",
+    "sqlite",
+    "database-migration"
+  ],
+  "comments": [
+    {
+      "post_id": 68348389,
+      "comment_id": 120795550,
+      "body": "Can you post the command you are using for loaddata?"
+    },
+    {
+      "post_id": 68348389,
+      "comment_id": 120799216,
+      "body": "./manage.py loaddata -v 3 data.json"
+    },
+    {
+      "post_id": 68348389,
+      "comment_id": 120802429,
+      "body": "Are you defining more than one database? have you tried adding --app to the command, <code>python manage.py loaddata -v3 --app YOURAPP data.json</code>?"
+    },
+    {
+      "post_id": 68348389,
+      "comment_id": 120821915,
+      "body": "Yes I did similar thing. Dumped specific app and then tried to load the data. One of my app has the issue where it does not processing the objects in the json file."
+    },
+    {
+      "post_id": 68348389,
+      "comment_id": 120828537,
+      "body": "Are you sure all migrations are applied before running loaddata? Is there any error message when you run the command? Can you post the <code>DATABASE</code> part of your settings file? remember to change any sensitive info before posting"
+    },
+    {
+      "post_id": 68348389,
+      "comment_id": 120837019,
+      "body": "Yes. I was. The issue is resolved now. I had a recursive model schema and one of the entry was corrupted which resulted in this issue"
+    }
+  ],
+  "answers": [
+    {
+      "answer_id": 68348651,
+      "question_id": 68348389,
+      "body": "<p>Read <a href=\"https://support.storj.io/hc/en-us/articles/360029309111-How-to-fix-a-database-disk-image-is-malformed-\" rel=\"nofollow noreferrer\">this</a> for the image malformed part.</p>\n<p>When migrating from one database to another, you should first dump all data, then run django migrations on the new database and the load data. That should retain all column types.</p>\n<p>When running loaddata, the tables that have no dependencies should be loaded first and then the ones that depend on those already loaded.</p>\n"
+    },
+    {
+      "answer_id": 68372684,
+      "question_id": 68348389,
+      "body": "<p>I found the issues for these problems.</p>\n<ol>\n<li><p><code>Database image is malformed</code> occurred because I was copying entire db file directly. Just as, <a href=\"https://stackoverflow.com/users/3736164/angardi\">angardi</a> suggested, I compressed the db file using gzip package and then copied it. Which solved this issue.</p>\n</li>\n<li><p>There were two issues for which <code>loaddata</code> was not loading a certain app. That app contained a model which had a foreign key to itself. And one of the entry of the model had the foreign key set to the entry. This resulted in an infinite loop and the app wasn't loading. Even after fixing the entry I was facing the same issue. This happened because I dumped data of a specific app. One of the model of the app had a <code>ManyToMany</code> field set to a model of another app. Though, <code>loaddata</code> throws error when <code>ForeignKey</code> field reference is not found, I think it kept searching for the <code>ManyToMany</code> fields without throwing an error which turned into an infinite loop type of situation. All, I had to do here is, dump the entire database or the related app on the same file.</p>\n</li>\n</ol>\n"
+    }
+  ],
+  "is_answered": true,
+  "answer_count": 2,
+  "last_activity_date": 1627975499,
+  "question_id": 68348389,
+  "title": "Django sqlite to postgres database migration",
+  "body": "<p>I have a quite large db of 750MB which I need to migrate from <code>sqlite</code> to <code>postgres</code>. As, the db is quite large I am facing some issues that some of the previous questions on the same topic did not had.</p>\n<p>Few days ago, I have migrated one <code>sqlite</code> db of size 30MB without any issues with <code>loaddata</code> and <code>dumpdata</code> commands. But for this large db, one of my app throws <code>Database image is malformed</code> error when running command <code>dumpdata</code>. Another of my app dumps successfully but does not load. I have seen the with <code>-v 3</code> verbose flag that the objects are not even processed. To be precise, while running the <code>loaddata</code> command data from json file is processed first to check duplicate primary key and other model constraints then those data are used to create model objects. But for this app, data are not processed in the first place.</p>\n<p>Apart from this two commands there are some other methods that does the migration. But, the schema is completely changed in those way which I don't desire to do. Moreover I have faced issue <code>DurationField</code> becomes a string after migration and I couldn't typecast those fields. <code>Bigint</code> becomes <code>int</code> and <code>varchar</code> becomes <code>text</code> etc are some of the issues. I cannot afford to have this kind of issues.</p>\n"
+}

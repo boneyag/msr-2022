@@ -1,0 +1,59 @@
+{
+    "items": [
+      {
+        "tags": [
+          "django",
+          "oop",
+          "django-models"
+        ],
+        "comments": [
+          {
+            "post_id": 68424723,
+            "comment_id": 120927054,
+            "body": "In pycharm highlight first one and press ` Alt + J / Shift + Alt + J `"
+          },
+          {
+            "post_id": 68424723,
+            "comment_id": 120928798,
+            "body": "code autocompletion tools might be what you are looking for, check the ones available for your editor"
+          },
+          {
+            "post_id": 68424723,
+            "comment_id": 120932279,
+            "body": "sorry @RezaHeydari what that command do? ... I tried to do it but nothing happened."
+          },
+          {
+            "post_id": 68424723,
+            "comment_id": 120932357,
+            "body": "highlight a text and press alt + j, this works fine for me,  this command let you edit with multi cursor"
+          },
+          {
+            "post_id": 68424723,
+            "comment_id": 120932392,
+            "body": "Aha @RezaHeydari, yea I see I was highlighting the whole line, this help, Thank you ... but I was looking for best practices to write my code."
+          },
+          {
+            "post_id": 68424723,
+            "comment_id": 120932449,
+            "body": "@mrblu I will check that, Thank you."
+          }
+        ],
+        "answers": [
+          {
+            "answer_id": 68425909,
+            "question_id": 68424723,
+            "body": "<p>You can do something like this:</p>\n<pre><code>class MyCustomIntegerField(models.IntegerField):\n    default_validators = [MaxValueValidator(100), MinValueValidator(1)]\n</code></pre>\n<p>then use them on your models:</p>\n<pre><code>class Skills(models.Model):\n    pace = MyCustomIntegerField()\n    ...\n</code></pre>\n"
+          }
+        ],
+        "is_answered": true,
+        "answer_count": 1,
+        "last_activity_date": 1626580888,
+        "question_id": 68424723,
+        "title": "handle duplicate attribute in django model fields, looking for best practise",
+        "body": "<p>I'm having a senario, where my model have different fields but the share the same attribute for example I have the following model:</p>\n<pre><code>class Skills(models.Model):\n    pace = models.IntegerField()\n    shooting = models.IntegerField()\n    passing = models.IntegerField()\n    dribbling = models.IntegerField()\n    defending = models.IntegerField()\n    physic = models.IntegerField()\n    gk_diving = models.IntegerField()\n    gk_handling = models.IntegerField()\n    gk_kicking = models.IntegerField()\n    gk_reflexes = models.IntegerField()\n    gk_speed = models.IntegerField()\n    .\n    .\n    .\n</code></pre>\n<p><strong>So Is there a way that can let me writing my model in better way?</strong></p>\n<p>I mean when I want to update, for example, from <code>models.IntegerField()</code> to <code>models.IntegerField(validators=[MaxValueValidator(100),MinValueValidator(1)])</code>.\nI have to do the update for the whole fields.</p>\n"
+      }
+    ],
+    "has_more": false,
+    "quota_max": 10000,
+    "quota_remaining": 9658
+  }

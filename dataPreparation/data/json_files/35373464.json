@@ -1,0 +1,34 @@
+{
+    "items": [
+      {
+        "tags": [
+          "json",
+          "localization",
+          "gettext",
+          "poedit",
+          "xgettext"
+        ],
+        "answers": [
+          {
+            "answer_id": 35373805,
+            "question_id": 35373464,
+            "body": "<p>Here is the way you will get them as JS arrays through XMLHttpRequest: <a href=\"http://codepen.io/KryptoniteDove/post/load-json-file-locally-using-pure-javascript\" rel=\"nofollow\">http://codepen.io/KryptoniteDove/post/load-json-file-locally-using-pure-javascript</a></p>\n\n<p>Also there is a way to include somedb.txt as a valid js if you modify it by adding variable id <em>somevar</em> to provide further access:</p>\n\n<pre><code>somevar = [\n{ \"id\": 1, \"name\": \"Xyz\", \"local\": \"AxWhyZzz\", /*...*/ },\n/*...*/\n]\n</code></pre>\n"
+          },
+          {
+            "answer_id": 35378019,
+            "question_id": 35373464,
+            "body": "<p>No, there isn't a way. JSON is just a generic container format, the actual <em>meaning</em> of the values is domain/application specific — and <code>xgettext</code> must understand the meaning to know what to extract. How could it understand your homegrown format?</p>\n\n<p>For XML files, this is solved by <a href=\"http://www.w3.org/TR/its/\" rel=\"nofollow\">ITS</a> (<a href=\"http://www.w3.org/TR/its20\" rel=\"nofollow\">v2</a>), which gettext (and thus Poedit) supports since 0.19.7. But for JSON, nothing exists… yet. There's some work being done (see <a href=\"http://locworld.localizationworl.netdna-cdn.com/wp-content/uploads/2015/04/FEISGILTT_2015_submission_4_Yves_JSON.pdf\" rel=\"nofollow\">here</a> and <a href=\"https://www.w3.org/International/its/wiki/JSON+ITS\" rel=\"nofollow\">here</a> and <a href=\"https://bitbucket.org/okapiframework/acorn/src\" rel=\"nofollow\">here</a>), though.</p>\n"
+          }
+        ],
+        "is_answered": true,
+        "answer_count": 2,
+        "last_activity_date": 1623762631,
+        "question_id": 35373464,
+        "title": "Parsing translatable messages from JSON file",
+        "body": "<p>I have a project that I want to be localizable. While most strings are in the source code, where xgettext/Poedit can easily find them when wrapped with the localization function call, some are in pure JSON files, that I'm using for data storage. Since it's just JSON, and not actually JS, I can't use function calls. For example, a little database:</p>\n\n<p>somedb.txt</p>\n\n<pre><code>[\n{ \"id\": 1, \"name\": \"Xyz\", \"local\": \"AxWhyZzz\", /*...*/ },\n/*...*/\n]\n</code></pre>\n\n<p>Is there a way to extract the \"local\" values from the JSON files with xgettext? And if there isn't, what are my options? Creating a source file that has all local values, wrapped with calls to <code>_</code>?</p>\n\n<p>Alternatively I could write my own parser of course, or modify gettext, but I'd much rather use existing solutions if available.</p>\n"
+      }
+    ],
+    "has_more": false,
+    "quota_max": 10000,
+    "quota_remaining": 9645
+  }

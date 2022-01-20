@@ -1,0 +1,63 @@
+{
+    "items": [
+      {
+        "tags": [
+          "django",
+          "foreign-keys"
+        ],
+        "comments": [
+          {
+            "post_id": 68432790,
+            "comment_id": 120941503,
+            "body": "what do you want to do? Do you want a count of posts related to a user?"
+          },
+          {
+            "post_id": 68432790,
+            "comment_id": 120941696,
+            "body": "@RezaHeydari In my case, I want to count the number of authors. Post is a foreign key item to Comment and author is a foreign key item to Post."
+          },
+          {
+            "post_id": 68432790,
+            "comment_id": 120941753,
+            "body": "with your models, each post has one author, the number of authors is 1?"
+          },
+          {
+            "post_id": 68432790,
+            "comment_id": 120941807,
+            "body": "Ooops. So I do need a separate model for Author! Thank you!"
+          },
+          {
+            "post_id": 68432790,
+            "comment_id": 120941873,
+            "body": "another thing I want mention about related_name, I post an answer about that"
+          },
+          {
+            "post_id": 68432790,
+            "comment_id": 120944905,
+            "body": "@RezaHeydari Come to think of it: I wanted to count the total number of authors, not how many authors for each post."
+          },
+          {
+            "post_id": 68432790,
+            "comment_id": 120947017,
+            "body": "<code>User.object.filter(posts__isnull=False).count()</code>  maybe this give you number of users at least have one post. 🤔"
+          }
+        ],
+        "answers": [
+          {
+            "answer_id": 68433098,
+            "question_id": 68432790,
+            "body": "<p>I want to tell you something about <code>related_name</code>:\n<code>related_name</code> help you access objects of another model for example</p>\n<pre><code>class Post(models.Model):\n    post = models.TextField(max_length=1000)\n    author = models.ForeignKey(User, related_name=&quot;posts&quot;, on_delete=models.CASCADE)\n\nclass Comment(models.Model):\n    comment = models.TextField(max_length=1000)\n    commenter = models.ForeignKey(User, on_delete=models.CASCADE)\n    post_connected =  models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE, default=None, null=True)\n</code></pre>\n<p>with <code>modelobject.related_name.all()</code> get objects of another models in this example <code>userobject.posts.all()</code> you can get all post related to user object.\nand with <code>post.comments.all()</code> can get all comments related to the post.</p>\n"
+          }
+        ],
+        "is_answered": true,
+        "answer_count": 1,
+        "last_activity_date": 1626642512,
+        "question_id": 68432790,
+        "title": "How does one count a foreign key item, esp &#39;author&#39; created with Django&#39;s User model?",
+        "body": "<p>Need help getting a better grip with 1) accessing and counting foreign key items in Django and 2) counting foreign key item that is created through Django's built-in User:</p>\n<p>#1)\nThe <a href=\"https://stackoverflow.com/a/32998738/5965865\">answer here</a> suggests using Django's <code>annotate</code> function: eg. <code>questions = Question.objects.annotate(number_of_answers=Count('answer'))</code> (question being a foreign key item to answer). But it is not clear to me where this line belongs to (in the case of the example, question or answer), or which part of an app-models.py or views.py. I tested in both models.py and views.py</p>\n<p>Here are my models (only the essential lines here):</p>\n<pre><code>class Post(models.Model):\n            post = models.TextField(max_length=1000)\n            author = models.ForeignKey(User, related_name=&quot;author&quot;, on_delete=models.CASCADE)\n\nclass Comment(models.Model):\n    comment = models.TextField(max_length=1000)\n    commenter = models.ForeignKey(User, on_delete=models.CASCADE)\n    post_connected =  models.ForeignKey(Post, related_name='posts', on_delete=models.CASCADE, default=None, null=True)\n</code></pre>\n<p>#2) How does one count a foreign key item created using Django's built-in model, User?\nShould I have created a model called &quot;Author&quot; first?</p>\n"
+      }
+    ],
+    "has_more": false,
+    "quota_max": 10000,
+    "quota_remaining": 9656
+  }

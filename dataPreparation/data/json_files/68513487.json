@@ -1,0 +1,44 @@
+{
+    "items": [
+      {
+        "tags": [
+          "python",
+          "json",
+          "api"
+        ],
+        "comments": [
+          {
+            "post_id": 68513487,
+            "comment_id": 121083551,
+            "body": "I&#39;m having a hard time understanding your question. What exactly is the problem with your code?"
+          },
+          {
+            "post_id": 68513487,
+            "comment_id": 121133602,
+            "body": "Next time please remember to post the actual problem, not just the lines causing the problem."
+          },
+          {
+            "post_id": 68513487,
+            "comment_id": 121133808,
+            "body": "Related  <a href=\"https://stackoverflow.com/questions/12018992/print-combining-strings-and-numbers\">Print Combining Strings and Numbers</a> change &#39;+&#39; to &#39;,&#39;.  <code>print (&#39;latitude:&#39;, values[&#39;lat&#39;])</code>?"
+          }
+        ],
+        "answers": [
+          {
+            "answer_id": 68542208,
+            "question_id": 68513487,
+            "body": "<pre><code>$ curl http://ip-api.com/json/1.1.1.1\n{&quot;status&quot;:&quot;success&quot;,&quot;country&quot;:&quot;Australia&quot;,&quot;countryCode&quot;:&quot;AU&quot;,&quot;region&quot;:&quot;QLD&quot;,&quot;regionName&quot;:&quot;Queensland&quot;,&quot;city&quot;:&quot;South Brisbane&quot;,&quot;zip&quot;:&quot;4101&quot;,&quot;lat&quot;:-27.4766,&quot;lon&quot;:153.0166,&quot;timezone&quot;:&quot;Australia/Brisbane&quot;,&quot;isp&quot;:&quot;Cloudflare, Inc&quot;,&quot;org&quot;:&quot;APNIC and Cloudflare DNS Resolver project&quot;,&quot;as&quot;:&quot;AS13335 Cloudflare, Inc.&quot;,&quot;query&quot;:&quot;1.1.1.1&quot;}\n</code></pre>\n<p>From this, we can see that <code>lat</code> and <code>lon</code> are numbers in the JSON, not strings:</p>\n<pre><code>&quot;lat&quot;:-27.4766,&quot;lon&quot;:153.0166\n</code></pre>\n<p>So Python is complaining, because you can't add a number to a string.</p>\n<p>To make it work, either convert the number to a string first:</p>\n<pre><code>print (&quot;latitude:&quot; + str(values['lat']))\nprint (&quot;longitude:&quot; + str(values['lon']))\n</code></pre>\n<p>Or, for a more modern and readable solution, use <a href=\"https://docs.python.org/3/reference/lexical_analysis.html#formatted-string-literals\" rel=\"nofollow noreferrer\">f-strings</a>:</p>\n<pre><code>print (f&quot;latitude:{values['lat']}&quot;)\nprint (f&quot;longitude:{values['lon']}&quot;)\n</code></pre>\n"
+          }
+        ],
+        "is_answered": false,
+        "answer_count": 1,
+        "last_activity_date": 1627377544,
+        "question_id": 68513487,
+        "title": "i made a program which tells the location etc by entering the ip adress but i have to now this format is showing error, what should i do to correct it",
+        "body": "<pre><code>\nimport  os\n\nimport urllib2\n\nimport json\n\nwhile True :\n\n    ip= raw_input (&quot;what's the ip :&quot;)\n\n    url=&quot;http://ip-api.com/json/&quot;\n\n    response = urllib2.urlopen(url + ip)\n\n    data = response.read()\n\n    values = json.loads(data)\n\n    print (&quot;IP:&quot; + values['query'])\n    print (&quot;city:&quot; + values['city'])\n    print (&quot;ISP:&quot; + values['isp'])\n    print (&quot;COUNTRY:&quot; + values['country'])\n    print (&quot;region:&quot; + values['region'])\n    print (&quot;time zone:&quot; + values['timezone'])\n\n</code></pre>\n<p>what should i add instead of these 2 ?</p>\n<pre><code>print (&quot;latitude:&quot; + values['lat'])\nprint (&quot;longitude:&quot; + values['lon'])\nbreak \n</code></pre>\n"
+      }
+    ],
+    "has_more": false,
+    "quota_max": 10000,
+    "quota_remaining": 9644
+  }

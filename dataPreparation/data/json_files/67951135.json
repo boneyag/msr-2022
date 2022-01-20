@@ -1,0 +1,35 @@
+{
+    "items": [
+      {
+        "tags": [
+          ".net",
+          "regex",
+          "asp.net-core",
+          "annotations"
+        ],
+        "comments": [
+          {
+            "post_id": 67951135,
+            "comment_id": 120104153,
+            "body": "What the <code>12345678X</code> means? Is it hexadecimal string? If you meant 8 digit hexadecimal ended with the <code>X</code> you can use the following pattern: <b>&quot;[0-9A-Fa-f]{8}X&quot;</b>"
+          }
+        ],
+        "answers": [
+          {
+            "answer_id": 67952322,
+            "question_id": 67951135,
+            "body": "<p>I hope this will solve your issue</p>\n<pre><code>[Test]\npublic void RegexTest()\n{\n    var regex = new Regex(&quot;^[0-9]{8}[A-Za-z]$&quot;);\n    Assert.IsTrue(regex.IsMatch(&quot;12345678A&quot;));\n    Assert.IsFalse(regex.IsMatch(&quot;12345678AB&quot;));\n}\n</code></pre>\n"
+          }
+        ],
+        "is_answered": true,
+        "answer_count": 1,
+        "last_activity_date": 1623647195,
+        "question_id": 67951135,
+        "title": "Can someone help me with Regular Expression in .net",
+        "body": "<p>Can someone help me modify this</p>\n<pre><code>[RegularExpression(@&quot;([0-9]+)&quot;, ErrorMessage = &quot;Must be a Number.&quot;)] \n</code></pre>\n<p>to become like this form.\nExample 12345678X eight numbers and the last char is an alphabetic character.</p>\n"
+      }
+    ],
+    "has_more": false,
+    "quota_max": 10000,
+    "quota_remaining": 9668
+  }

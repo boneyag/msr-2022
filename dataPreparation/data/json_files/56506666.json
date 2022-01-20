@@ -1,0 +1,42 @@
+{
+  "tags": [
+    "javascript",
+    "jquery",
+    "json"
+  ],
+  "comments": [
+    {
+      "post_id": 56506666,
+      "comment_id": 99600837,
+      "body": "Possible duplicate of <a href=\"https://stackoverflow.com/questions/11922383/how-can-i-access-and-process-nested-objects-arrays-or-json\">How can I access and process nested objects, arrays or JSON?</a>"
+    },
+    {
+      "post_id": 56506666,
+      "comment_id": 99601111,
+      "body": "can you please clarify if the object has keys like 0,1,2 or you just copied from console?"
+    },
+    {
+      "post_id": 56506666,
+      "comment_id": 99601733,
+      "body": "What&#39;s a JSON object?"
+    }
+  ],
+  "answers": [
+    {
+      "answer_id": 56506717,
+      "question_id": 56506666,
+      "body": "<p>You can use <code>filter</code>. It will return another array. Use <code>index</code> to get the object and retrieve name from it</p>\n<p><div class=\"snippet\" data-lang=\"js\" data-hide=\"false\" data-console=\"true\" data-babel=\"false\">\r\n<div class=\"snippet-code\">\r\n<pre class=\"snippet-code-js lang-js prettyprint-override\"><code>let data = [{\n    id: \"864\",\n    text: \"[145-028] \",\n    name: \"145028\",\n    type: null,\n    description: \"\"\n  },\n  {\n    id: \"593\",\n    text: \"[111-111] \",\n    name: \"111111\",\n    type: null,\n    description: \"\"\n  },\n  {\n    id: \"616\",\n    text: \"[330-00D] \",\n    name: \"33000D\",\n    type: null,\n    description: \"\"\n  },\n  {\n    id: \"595\",\n    text: \"[124-964] \",\n    name: \"124964\",\n    type: null,\n    description: \"\"\n  },\n  {\n    id: \"597\",\n    text: \"[476-978] \",\n    name: \"476978\",\n    type: null,\n    description: \"\"\n  },\n  {\n    id: \"131\",\n    text: \"[142-222] \",\n    name: \"142222\",\n    type: null,\n    description: \"\"\n  },\n  {\n    id: \"132\",\n    text: \"[149-603] \",\n    name: \"149603\",\n    type: null,\n    description: \"\"\n  },\n  {\n    id: \"603\",\n    text: \"[778-498] \",\n    name: \"778498\",\n    type: null,\n    description: \"\"\n\n  }\n];\n\nfunction getval(id) {\n\n  let obj = data.filter(item =&gt; item.id === id);\n  return obj[0].name;\n}\n\nconsole.log(getval('864'))</code></pre>\r\n</div>\r\n</div>\r\n</p>\n<p>Alternatively you can also use <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find\" rel=\"nofollow noreferrer\"><code>find</code></a>. Unlike <code>filter</code> it will return the first object where the <code>id</code> matches.</p>\n<p><div class=\"snippet\" data-lang=\"js\" data-hide=\"false\" data-console=\"true\" data-babel=\"false\">\r\n<div class=\"snippet-code\">\r\n<pre class=\"snippet-code-js lang-js prettyprint-override\"><code>let data = [{\n    id: \"864\",\n    text: \"[145-028] \",\n    name: \"145028\",\n    type: null,\n    description: \"\"\n  },\n  {\n    id: \"593\",\n    text: \"[111-111] \",\n    name: \"111111\",\n    type: null,\n    description: \"\"\n  },\n  {\n    id: \"616\",\n    text: \"[330-00D] \",\n    name: \"33000D\",\n    type: null,\n    description: \"\"\n  },\n  {\n    id: \"595\",\n    text: \"[124-964] \",\n    name: \"124964\",\n    type: null,\n    description: \"\"\n  },\n  {\n    id: \"597\",\n    text: \"[476-978] \",\n    name: \"476978\",\n    type: null,\n    description: \"\"\n  },\n  {\n    id: \"131\",\n    text: \"[142-222] \",\n    name: \"142222\",\n    type: null,\n    description: \"\"\n  },\n  {\n    id: \"132\",\n    text: \"[149-603] \",\n    name: \"149603\",\n    type: null,\n    description: \"\"\n  },\n  {\n    id: \"603\",\n    text: \"[778-498] \",\n    name: \"778498\",\n    type: null,\n    description: \"\"\n\n  }\n];\n\nfunction getvalUsingFind(id) {\n\n  return data.find(item =&gt; item.id === id).name;\n}\n\nconsole.log(getvalUsingFind('864'))</code></pre>\r\n</div>\r\n</div>\r\n</p>\n"
+    },
+    {
+      "answer_id": 56506826,
+      "question_id": 56506666,
+      "body": "<p>I propose:</p>\n\n<p><div class=\"snippet\" data-lang=\"js\" data-hide=\"false\" data-console=\"true\" data-babel=\"false\">\r\n<div class=\"snippet-code\">\r\n<pre class=\"snippet-code-js lang-js prettyprint-override\"><code>const MyData = [{ 0: {id: \"864\", text: \"[145-028] \", name: \"145028\", type: null, description: \"\"}\r\n                , 1: {id: \"593\", text: \"[111-111] \", name: \"111111\", type: null, description: \"\"} \r\n                , 2: {id: \"616\", text: \"[330-00D] \", name: \"33000D\", type: null, description: \"\"} \r\n                , 3: {id: \"595\", text: \"[124-964] \", name: \"124964\", type: null, description: \"\"} \r\n                , 4: {id: \"597\", text: \"[476-978] \", name: \"476978\", type: null, description: \"\"} \r\n                , 5: {id: \"131\", text: \"[142-222] \", name: \"142222\", type: null, description: \"\"} \r\n                , 6: {id: \"132\", text: \"[149-603] \", name: \"149603\", type: null, description: \"\"} \r\n                , 7: {id: \"603\", text: \"[778-498] \", name: \"778498\", type: null, description: \"\"} \r\n                }];\r\n\r\nfunction MyDataGetVal(x_ID) {\r\n  return Object.values(MyData[0]).find(E=&gt;E.id===x_ID )|| null;\r\n}\r\n\r\n\r\nlet E_864 = MyDataGetVal('864')\r\n  , E_132 = MyDataGetVal('132')\r\n  , E_XXX = MyDataGetVal('XXX')\r\n;\r\n\r\nconsole.log ('E_864 = ',  JSON.stringify(E_864))\r\n\r\nconsole.log ('E_132 = ',  JSON.stringify(E_132))\r\n\r\nconsole.log ('E_XXX = ',  JSON.stringify(E_XXX))</code></pre>\r\n</div>\r\n</div>\r\n</p>\n"
+    }
+  ],
+  "is_answered": true,
+  "answer_count": 2,
+  "last_activity_date": 1626670803,
+  "question_id": 56506666,
+  "title": "Get item from json object with key:value",
+  "body": "<p>I would like know if we can get an item from json by providing a key value pair.</p>\n\n<p>For eg. I have a json object like below</p>\n\n<pre><code>[\n{id: \"864\", text: \"[145-028] \", name: \"145028\", type: null, description: \"\"},\n{id: \"593\", text: \"[111-111] \", name: \"111111\", type: null, description: \"\"},\n{id: \"616\", text: \"[330-00D] \", name: \"33000D\", type: null, description: \"\"},\n{id: \"595\", text: \"[124-964] \", name: \"124964\", type: null, description: \"\"},\n{id: \"597\", text: \"[476-978] \", name: \"476978\", type: null, description: \"\"},\n{id: \"131\", text: \"[142-222] \", name: \"142222\", type: null, description: \"\"},\n{id: \"132\", text: \"[149-603] \", name: \"149603\", type: null, description: \"\"},\n{id: \"603\", text: \"[778-498] \", name: \"778498\", type: null, description: \"\"}\n]\n</code></pre>\n\n<p>How can I get a single item by id <code>864</code>, so that I can get the name, type and description for the particular item.</p>\n\n<p>Any help would be greatly appreciated</p>\n"
+}

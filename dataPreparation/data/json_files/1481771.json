@@ -1,0 +1,60 @@
+{
+  "tags": [
+    "django",
+    "forms",
+    "message"
+  ],
+  "answers": [
+    {
+      "answer_id": 1481804,
+      "question_id": 1481771,
+      "body": "<p>You may want to look at Django's excellent <a href=\"http://docs.djangoproject.com/en/dev/topics/i18n/\" rel=\"nofollow noreferrer\">i18n support</a>.</p>\n"
+    },
+    {
+      "answer_id": 1486038,
+      "question_id": 1481771,
+      "body": "<p>Hmm, seems there is no easy workaround for the problem.</p>\n<p>While skimming through the Django code, I've found that default error messages are hard-coded into each form field class, for ex:</p>\n<pre><code>class CharField(Field):\n    default_error_messages = {\n        'max_length': _(u'Ensure this value has at most %(max)d characters (it has %(length)d).'),\n        'min_length': _(u'Ensure this value has at least %(min)d characters (it has %(length)d).'),\n    }\n</code></pre>\n<p>And the easiest way is to use the <code>error_messages</code> argument, so I had to write the wrapper function:</p>\n<pre><code>def DZForm(name, args = {}):\n    error_messages = {\n        'required': u'required',\n        'invalid': u'invalid',\n    }\n    if 'error_messages' in args.keys():\n        args['error_messages'] = error_messages.update(args['error_messages'])\n    else:\n        args['error_messages'] = error_messages\n    return getattr(forms, name)(**args)\n</code></pre>\n<p>If someone knows a more elegant way of doing this would really appreciate seeing it :)</p>\n<p>Thanks!</p>\n"
+    },
+    {
+      "answer_id": 1488660,
+      "question_id": 1481771,
+      "body": "<p>The easiest way is to provide your set of default errors to the form field definition. Form fields can take a named argument for it. For example:</p>\n\n<pre><code>my_default_errors = {\n    'required': 'This field is required',\n    'invalid': 'Enter a valid value'\n}\n\nclass MyForm(forms.Form):\n    some_field = forms.CharField(error_messages=my_default_errors)\n    ....\n</code></pre>\n\n<p>Hope this helps.</p>\n"
+    },
+    {
+      "answer_id": 3288241,
+      "question_id": 1481771,
+      "body": "<p>Since this page comes up in a search, perhaps it's worth adding my $0.02 even though the question is old.  (I'm still getting used to Stack Overflow's particular etiquette.)</p>\n\n<p>The underscore (\"_\") is an alias (if that's the right term) for ugettext_lazy; just look at the import statements at the top of the file with \"hard-coded\" messages.  Then, Django's internationalization docs should help, e.g. <a href=\"http://www.djangobook.com/en/2.0/chapter19/\" rel=\"nofollow noreferrer\">http://www.djangobook.com/en/2.0/chapter19/</a></p>\n"
+    },
+    {
+      "answer_id": 4764886,
+      "question_id": 1481771,
+      "body": "<p>Also come here from google and what I need is to overwrite the default required messages for all fields in my form rather than passing the error_messages argument everytime I defined new form fields. Also, I'm not ready yet to delve into i18n, this apps not required to be multilingual. The comment in this blog post is the closest to what I want:-</p>\n\n<p><a href=\"http://davedash.com/2008/11/28/custom-error-messages-for-django-forms/\" rel=\"noreferrer\">http://davedash.com/2008/11/28/custom-error-messages-for-django-forms/</a></p>\n\n<p>For all form fields that has required messages, this is what I did:-</p>\n\n<pre><code>class MyForm(forms.Form):\n    def __init__(self, *args, **kwargs):\n        super(MyForm, self).__init__(*args, **kwargs)\n        for k, field in self.fields.items():\n            if 'required' in field.error_messages:\n                field.error_messages['required'] = 'You have to field this.'\n\nclass MUserForm(MyForm):\n    user = forms.CharField(\n        label=\"Username\",\n    )\n    ....\n</code></pre>\n"
+    },
+    {
+      "answer_id": 14106535,
+      "question_id": 1481771,
+      "body": "<p>Say I have a <code>BaseForm</code> with some <code>error_messages</code> dictionary like:</p>\n\n<pre><code>error_messages = {\n    'required': 'This field is required',\n    'caps': 'This field if case sensitive' \n}\n</code></pre>\n\n<p>and I want to override one of the error messages:</p>\n\n<pre><code>class MySpecialForm(BaseForm):\n    def __init__(self, *args, **kwargs):\n        super(MySpecialForm, self).__init__(*args, **kwargs)\n        self.error_messages['caps'] = 'Hey, that CAPSLOCK is on!!!'\n</code></pre>\n\n<p>Basically, just override one of the dictionary values. I am not sure how it would work with internationalization though.</p>\n"
+    },
+    {
+      "answer_id": 18758055,
+      "question_id": 1481771,
+      "body": "<p>from ProDjango book:</p>\n\n<pre><code>from django.forms import fields, util\n\n\nclass LatitudeField(fields.DecimalField):  \n    default_error_messages = {\n        'out_of_range': u'Value must be within -90 and 90.',\n    }\n\n\n    def clean(self, value):  \n        value = super(LatitudeField, self).clean(value)  \n        if not -90 &lt;= value &lt;= 90:  \n            raise util.ValidationError(self.error_messages['out_of_range'])\n        return value\n</code></pre>\n"
+    },
+    {
+      "answer_id": 20146377,
+      "question_id": 1481771,
+      "body": "<p>To globally override the \"required\" error message, set the default_error_messages class attribute on Field:</p>\n\n<pre><code># form error message override\nfrom django.forms import Field\nfrom django.utils.translation import ugettext_lazy\nField.default_error_messages = {\n    'required': ugettext_lazy(\"This field is mandatory.\"),\n}\n</code></pre>\n\n<p>This needs to happen before any fields are instantiated, e.g. by including it in settings.py.</p>\n"
+    },
+    {
+      "answer_id": 54049931,
+      "question_id": 1481771,
+      "body": "<pre><code>from django import forms\nfrom django.utils.translation import gettext as _\n\n\nclass MyForm(forms.Form):\n     # create form field\n     subject = forms.CharField(required=True)\n\n     # override one specific error message and leave the others unchanged\n     # use gettext for translation\n     subject.error_messages['required'] = _('Please enter a subject below.')\n</code></pre>\n"
+    }
+  ],
+  "is_answered": true,
+  "answer_count": 9,
+  "last_activity_date": 1628257325,
+  "question_id": 1481771,
+  "title": "Django override default form error messages",
+  "body": "<p>How can I overwrite the default form error messages (for example: need them in other language) for the all apps in my project (or at least for 1 app)</p>\n\n<p>Thanks!</p>\n"
+}

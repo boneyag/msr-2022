@@ -1,0 +1,30 @@
+{
+  "tags": [
+    "python",
+    "django",
+    "django-cms"
+  ],
+  "answers": [
+    {
+      "answer_id": 28694894,
+      "question_id": 28694763,
+      "body": "<p>To change the language codes for all content on a django CMS site, run these commands (switching from <code>'en-us'</code> to <code>'de'</code>:</p>\n\n<pre class=\"lang-py prettyprint-override\"><code>Page.objects.filter(language='en-us').update('de')\nTitle.objects.filter(language='en-us').update(language='de')\nCMSPlugin.objects.filter(language='en-us').update(language='de')\n</code></pre>\n"
+    },
+    {
+      "answer_id": 56162296,
+      "question_id": 28694763,
+      "body": "<p>To add to @ojii's answer, with django-cms 3.6.0 &amp; django 1.11.20 the procedure now is:</p>\n\n<ol>\n<li>Modify <code>settings.py</code>:</li>\n</ol>\n\n<pre class=\"lang-py prettyprint-override\"><code>#LANGUAGE_CODE = 'en-us'\nLANGUAGE_CODE = 'en'\n</code></pre>\n\n<ol start=\"2\">\n<li>Update Pages, Titles, CMSPlugins (note the <code>languages</code> for Pages):</li>\n</ol>\n\n<pre class=\"lang-py prettyprint-override\"><code>Page.objects.filter(languages='en-us').update(languages='en')\nTitle.objects.filter(language='en-us').update(language='en')\nCMSPlugin.objects.filter(language='en-us').update(language='en')\n</code></pre>\n"
+    },
+    {
+      "answer_id": 68364150,
+      "question_id": 28694763,
+      "body": "<p>The accepted answer is not compatible with the newer versions of Django CMS. The <code>language</code> attribute has been changed into <code>languages</code> (also see <a href=\"https://stackoverflow.com/a/56162296/522248\">https://stackoverflow.com/a/56162296/522248</a>). For <code>draft mode</code> versions of your pages, this contains a comma separated list of available languages. Simply searching for the exact language and updating it to the next version won't work.</p>\n<p>Given we want to change 'nl' into 'nl-nl', the following should match:</p>\n<pre><code>nl,en,de\nde,nl,en\nen,de,nl\nnl\n</code></pre>\n<p>We can't just search for 'nl', because the following must not match:</p>\n<pre><code>nl-nl\nnl-nl,en\n</code></pre>\n<p>My solution:</p>\n<pre><code>from_lang = 'nl'\nto_lang = 'nl-nl'\n\n# Match our lang at start, middle or end of list\nlang_regex = r'^(.*,)?{}(,.*)?$'.format(from_lang)\n\n# Get all distinct combinations of languages that contain our language\nlanguage_combinations = Page.objects\\\n    .filter(languages__regex=lang_regex)\\\n    .values('languages')\\\n    .distinct()\n\n# Create a mapping for each combination, replacing the old for the new lang\nlanguage_mappings = [\n    (\n        page['languages'],\n        re.sub(lang_regex, '\\\\1{}\\\\2'.format(to_lang), page['languages'])\n    ) for page in language_combinations\n]\n\n# Update all pages to new lang\nfor old_languages, new_languages in language_mappings:\n    Page.objects\\\n        .filter(languages=old_languages)\\\n        .update(languages=new_languages)\n\n# Also update Title and CMSPlugins\nTitle.objects.filter(language=from_lang).update(language=to_lang)\nCMSPlugin.objects.filter(language=from_lang).update(language=to_lang)\n\n</code></pre>\n"
+    }
+  ],
+  "is_answered": true,
+  "answer_count": 3,
+  "last_activity_date": 1626185812,
+  "question_id": 28694763,
+  "title": "How can I change the language of a whole Django CMS website?",
+  "body": "<p>I would like to change the language of a website written with the Django CMS from <code>en-us</code> to <code>de</code> in a way that all present contents in <code>en-us</code> will be shown for <code>de</code> in the future.</p>\n\n<p>I tried</p>\n\n<pre><code>Page.objects.all().update(languages='de')\n</code></pre>\n\n<p>but afterwards there were 404 Errors everywhere.</p>\n\n<p>What else do I have to change?</p>\n"
+}

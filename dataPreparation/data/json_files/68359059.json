@@ -1,0 +1,33 @@
+{
+    "items": [
+      {
+        "tags": [
+          "arrays",
+          "json",
+          "laravel",
+          "request"
+        ],
+        "answers": [
+          {
+            "answer_id": 68359357,
+            "question_id": 68359059,
+            "body": "<p>Change the json into an array:</p>\n<pre><code>$json_array = json_decode($your_json, true);\n</code></pre>\n<p>Access the element you want:</p>\n<pre><code>$org1 = $json_array['data']['orgs']['org1'];\n</code></pre>\n<p>And if you want to convert to json:</p>\n<pre><code>$org1 = json_encode($org1);\n</code></pre>\n"
+          },
+          {
+            "answer_id": 68360075,
+            "question_id": 68359059,
+            "body": "<p>dd() output:</p>\n<pre><code>array:1 [\n  0 =&gt; array:1 [\n    &quot;orgs&quot; =&gt; array:1 [\n      0 =&gt; array:1 [\n        &quot;org1&quot; =&gt; array:1 [\n          0 =&gt; array:2 [\n            &quot;attribute&quot; =&gt; array:1 [\n              0 =&gt; array:3 [\n                &quot;name&quot; =&gt; &quot;Из json&quot;\n                &quot;inn&quot; =&gt; &quot;88888111&quot;\n                &quot;kpp&quot; =&gt; &quot;11188888&quot;\n              ]\n            ]\n            &quot;tickets&quot; =&gt; array:1 [\n              0 =&gt; array:1 [\n                &quot;ticket1&quot; =&gt; array:1 [\n                  0 =&gt; array:14 [\n                    &quot;account_uid&quot; =&gt; &quot;UKP2010001002&quot;\n                    &quot;created_at&quot; =&gt; &quot;2021-13-07&quot;\n                    &quot;title&quot; =&gt; &quot;Из json&quot;\n                    &quot;text&quot; =&gt; &quot;Из json&quot;\n                    &quot;status&quot; =&gt; &quot;1&quot;\n                    &quot;priority&quot; =&gt; &quot;2&quot;\n                    &quot;fullname&quot; =&gt; &quot;Вася Джейсонович&quot;\n                    &quot;workaddr&quot; =&gt; &quot;дом улица фонарь&quot;\n                    &quot;phone&quot; =&gt; &quot;+791478562548&quot;\n                    &quot;email&quot; =&gt; &quot;vasya@mail.ru&quot;\n                    &quot;workstart&quot; =&gt; &quot;вечером&quot;\n                    &quot;workend&quot; =&gt; &quot;утром&quot;\n                    &quot;dispetcher&quot; =&gt; &quot;Матрёна Петровна&quot;\n                    &quot;responsible&quot; =&gt; &quot;Гайдай Пётр&quot;\n                  ]\n                ]\n              ]\n            ]\n          ]\n        ]\n      ]\n    ]\n  ]\n]\n</code></pre>\n"
+          }
+        ],
+        "is_answered": true,
+        "answer_count": 2,
+        "last_activity_date": 1626169526,
+        "question_id": 68359059,
+        "title": "How to save JSON in DB - laravel 8",
+        "body": "<p>I'll have JSON and try to disassemble and save it in database:</p>\n<pre>\n{\n    \"token\": \"f56445c24ad84e9c452f3ca6ef91e90beb2aef21\",\n    \"participant\": \"ZuP0rsny3MhqLC0\",\n    \"data\": {\n        \"orgs\": [{\n            \"org1\": {\n                \"attribute\": [{\n                    \"name\": \"val\",\n                    \"inn\": \"val\",\n                    \"kpp\": \"val\"\n                }],\n                \"tickets\": [{\n                    \"ticket1\": [{\n                        \"account_uid\": \"val\",\n                        \"created_at\": \"val\",\n                        \"title\": \"val\",\n                        \"text\": \"val\",\n                        \"status\": \"val\",\n                        \"priority\": \"val\",\n                        \"fullname\": \"val\",\n                        \"workaddr\": \"val\",\n                        \"phone\": \"val\",\n                        \"email\": \"val\",\n                        \"workstart\": \"val\",\n                        \"workend\": \"val\",\n                        \"dispetcher\": \"val\",\n                        \"responsible\": \"val\",\n                        \"closed_at\": \"val\",\n                        \"file\": \"val\"\n                    }]\n                }]\n            }\n        }]\n    }\n}\n</pre>\n<p>I'll try to save it to db with using use Illuminate\\Http\\Request(Request $request), but can't given access to array org1 and ticket.<br>\nMisstake:</p>\n<pre><code>Undefined array key &amp;quot;org1&amp;quot;\n</code></pre>\n<p>Which way to move?\nThnx</p>\n"
+      }
+    ],
+    "has_more": false,
+    "quota_max": 10000,
+    "quota_remaining": 9639
+  }

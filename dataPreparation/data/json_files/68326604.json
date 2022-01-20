@@ -1,0 +1,41 @@
+{
+  "tags": [
+    "javascript",
+    "json"
+  ],
+  "comments": [
+    {
+      "post_id": 68326604,
+      "comment_id": 120756672,
+      "body": "Familiarize yourself with <a href=\"/q/11922383/4642212\">how to access and process nested objects, arrays or JSON</a> and how to <a href=\"//developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/Object_initializer\" rel=\"nofollow noreferrer\">create objects</a> and use the available <a href=\"//developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object#Static_methods\" rel=\"nofollow noreferrer\"><code>Object</code></a> and <a href=\"//developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array#Static_methods\" rel=\"nofollow noreferrer\"><code>Array</code></a> methods (both static and on prototype)."
+    },
+    {
+      "post_id": 68326604,
+      "comment_id": 120756674,
+      "body": "See <a href=\"/q/500504/4642212\">Why is using \u201cfor\u2026in\u201d for array iteration a bad idea?</a> and <a href=\"/q/29285897/4642212\">What is the difference between ( for\u2026 in ) and ( for\u2026 of ) statements?</a>."
+    },
+    {
+      "post_id": 68326604,
+      "comment_id": 120756724,
+      "body": "<code>for (var j of comments.comments)</code> -- no need for nested loops."
+    },
+    {
+      "post_id": 68326604,
+      "comment_id": 120756769,
+      "body": "Does this answer your question? <a href=\"https://stackoverflow.com/questions/29285897/what-is-the-difference-between-for-in-and-for-of-statements\">What is the difference between ( for... in ) and ( for... of ) statements?</a>"
+    }
+  ],
+  "answers": [
+    {
+      "answer_id": 68326647,
+      "question_id": 68326604,
+      "body": "<p>If you know the structure of your JSON will always be a <code>comments</code> object on the first level, containing a list of elements with <code>created_utc</code> and <code>text</code>, you can do as easy as the following code.</p>\n<p>You don't need to nest the cycle as you only want to iterate over one list, then read the items and directly access to the <code>text</code> field of each item.</p>\n<p><div class=\"snippet\" data-lang=\"js\" data-hide=\"false\" data-console=\"true\" data-babel=\"false\">\r\n<div class=\"snippet-code\">\r\n<pre class=\"snippet-code-js lang-js prettyprint-override\"><code>var jsonString = `{\n  \"comments\": [\n    {\n      \"created_utc\": 1622513325,\n      \"text\": \"gdhg sgf sddsfsd fdsf\"\n    },\n    {\n      \"created_utc\": 1622513188,\n      \"text\": \"sfdg sgf fdgfdg\"\n    }\n   ]\n}`;\n\nlet comments = JSON.parse(jsonString).comments;\n\ncomments.forEach(comment =&gt; {\n  console.log(comment.text);\n});</code></pre>\r\n</div>\r\n</div>\r\n</p>\n"
+    }
+  ],
+  "is_answered": false,
+  "answer_count": 1,
+  "last_activity_date": 1625910929,
+  "question_id": 68326604,
+  "title": "Javascript iterating through JSON file",
+  "body": "<pre><code>{\n  &quot;comments&quot;: [\n    {\n      &quot;created_utc&quot;: 1622513325,\n      &quot;text&quot;: &quot;gdhg sgf sddsfsd fdsf&quot;\n    },\n    {\n      &quot;created_utc&quot;: 1622513188,\n      &quot;text&quot;: &quot;sfdg sgf fdgfdg&quot;\n    }\n   ]\n}\n</code></pre>\n<p>How would you iterate over each object to see the text?</p>\n<p>Something like..?</p>\n<pre><code>  let data = fs.readFileSync(path.resolve(__dirname, 'comments.json'));\n  let comments = JSON.parse(data);\n  for(var i in comments){\n    for(var j in i) {\n      console.log(&quot;? &quot; + j.text)\n    }\n  }\n</code></pre>\n"
+}

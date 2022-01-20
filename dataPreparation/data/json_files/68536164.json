@@ -1,0 +1,52 @@
+{
+    "items": [
+      {
+        "tags": [
+          "django"
+        ],
+        "comments": [
+          {
+            "post_id": 68536164,
+            "comment_id": 121124210,
+            "body": "Hi Phil, can you explain what your solution does not accomplish or where it has issues? Or are you looking for a different way of handling things?"
+          },
+          {
+            "post_id": 68536164,
+            "comment_id": 121124220,
+            "body": "Can you build an expression of GET parameters, like so <code>params = &#39;?&#39;+&#39;&#39;.join(map(lambda param: f&#39;{param}={request.GET.get(param)}&#39;, request.GET))</code> , and then do something like <code>HttpResponseRedirect(reverse(&#39;productDetailPageName&#39;) + params, kwargs={&#39;pk&#39;:3})</code>? I&#39;m not sure if i understood the question tbh"
+          },
+          {
+            "post_id": 68536164,
+            "comment_id": 121124285,
+            "body": "@schillingt The problem I&#39;m running into is that the token parameter still appears in the URL. I think Ricardo&#39;s approach might be what I need to try."
+          },
+          {
+            "post_id": 68536164,
+            "comment_id": 121124320,
+            "body": "Are you trying to redirect the user or remove the token from <code>GET</code> before the view operates on the request?"
+          },
+          {
+            "post_id": 68536164,
+            "comment_id": 121126607,
+            "body": "@schillingt Sorry for the lack of clarity. I posted a solution below that appears to be passing the tests I had set up"
+          }
+        ],
+        "answers": [
+          {
+            "answer_id": 68537898,
+            "question_id": 68536164,
+            "body": "<p>This is the solution I ended up going for:</p>\n<pre><code>from django.urls import resolve, reverse\nimport urllib\n\ndef drop_get_param(request, param):\n  'helpful for redirecting while dropping a specific parameter'\n  resolution = resolve(request.path_info) #simulate resolving the request\n\n  new_params = request.GET.copy() # copy the parameters\n  del new_params[param] # drop the specified parameter\n  \n  reversed = reverse(resolution.url_name, kwargs=resolution.kwargs) # create a base url\n\n  if new_params: #append the remaining parameters\n    reversed += '?' + urllib.parse.urlencode(new_params)\n\n  return reversed\n</code></pre>\n"
+          }
+        ],
+        "is_answered": true,
+        "answer_count": 1,
+        "last_activity_date": 1627348202,
+        "question_id": 68536164,
+        "title": "Django redirect and modify GET parameters",
+        "body": "<p>I am implementing magic tokens and would like clean URLs. As a consequence, I would like to remove the token from the URL upon a successful user authentication.  This is my attempt:</p>\n<pre><code>def authenticate_via_token(get_response):\n    def middleware(request):\n      if request.session.get('authenticated', None):\n        pass\n      else:\n        token = request.GET.get('token', None)\n        if token:\n          mt = MagicToken.fetch_by_token(token)\n          if mt:\n            request.session['authenticated'] = mt.email\n            if not request.GET._mutable:\n              request.GET._mutable = True\n              request.GET['token'] = None\n              request.GET._mutable = False\n          else:\n            print(&quot;invalid token&quot;)\n\n      response = get_response(request)\n      return response\n\n    return middleware\n</code></pre>\n<p>IE, I would like to send <code>/products/product-detail/3?token=piyMlVMrmYblRwHcgwPEee</code> --&gt; <code>/products/product-detail/3</code></p>\n<p>It's possible that there may be additional GET parameters and I would like to keep them. Any input would be appreciated!</p>\n"
+      }
+    ],
+    "has_more": false,
+    "quota_max": 10000,
+    "quota_remaining": 9647
+  }

@@ -1,0 +1,34 @@
+{
+    "items": [
+      {
+        "tags": [
+          "regex",
+          "vba",
+          "ms-word"
+        ],
+        "comments": [
+          {
+            "post_id": 68485041,
+            "comment_id": 121034229,
+            "body": "Try adding <code>RE.Multiline = True</code>. Also, escape the <code>.</code>, <code>RE.Pattern = &quot;^([0-9])\\.(\\s[A-Za-z\\s]*)&quot;</code>."
+          }
+        ],
+        "answers": [
+          {
+            "answer_id": 68485392,
+            "question_id": 68485041,
+            "body": "<p>The tricky part here is working with text in table cells.\nThe way you are doing it now will remove a lot of the table information and you will end up with a garbled document.<br />\nIf you do it cell by cell, it'll be easier:</p>\n<pre><code>For Each Table In ActiveDocument.Tables\n    For Each Cell In Table.Range.Cells\n        Set Matches = RE.Execute(Cell.Range.Text)\n        For Each Match In Matches\n            Cell.Range.Text = RE.Replace(Cell.Range.Text, replacePattern)\n        Next\n    Next\nNext\n</code></pre>\n"
+          }
+        ],
+        "is_answered": false,
+        "answer_count": 1,
+        "last_activity_date": 1626959310,
+        "question_id": 68485041,
+        "title": "VBA replacing all matches in the table (Word)",
+        "body": "<p>I have a table in Word, in the 3rd row I have &quot;1. Text&quot; I'm trying to delete the dot. I know that it can be done without vba, I'm just practicing on something simple.</p>\n<pre><code>Sub Test()\n\nDim replacePattern As String\nDim RE As RegExp\nSet RE = New RegExp\n\nRE.Pattern = &quot;(^[0-9]).(\\s[A-Za-z\\s]*)&quot;\nRE.Global = True\nreplacePattern = &quot;$1$2&quot;\n\nSet Matches = RE.Execute(Selection.Text)\nFor Each Match In Matches\n    Selection.Text = RE.Replace(Selection.Text, replacePattern)\nNext\nEnd Sub\n</code></pre>\n<p>Right now it replaces text only in the first selected cell. How can I do it properly?</p>\n"
+      }
+    ],
+    "has_more": false,
+    "quota_max": 10000,
+    "quota_remaining": 9663
+  }

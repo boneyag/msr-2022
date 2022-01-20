@@ -1,0 +1,38 @@
+{
+    "items": [
+      {
+        "tags": [
+          "django",
+          "templates",
+          "model",
+          "views"
+        ],
+        "answers": [
+          {
+            "answer_id": 12187845,
+            "question_id": 12187751,
+            "body": "<p>I suggest you remove your <code>object_list</code> view,</p>\n\n<p>define a dictionary for this specific view,</p>\n\n<pre><code>   all_models_dict = {\n        \"template_name\": \"contacts/index.html\",\n        \"queryset\": Individual.objects.all(),\n        \"extra_context\" : {\"role_list\" : Role.objects.all(),\n                           \"venue_list\": Venue.objects.all(),\n                           #and so on for all the desired models...\n                           }\n    }\n</code></pre>\n\n<p>and then in your urls:</p>\n\n<pre><code>#add this import to the top  \nfrom django.views.generic import list_detail\n\n(r'^$', list_detail.object_list, all_models_dict),\n</code></pre>\n"
+          },
+          {
+            "answer_id": 12357483,
+            "question_id": 12187751,
+            "body": "<p>I ended up modifying @thikonom 's answer to use class-based views:</p>\n\n<pre><code>class IndexView(ListView):\n    context_object_name = 'home_list'    \n    template_name = 'contacts/index.html'\n    queryset = Individual.objects.all()\n\n    def get_context_data(self, **kwargs):\n        context = super(IndexView, self).get_context_data(**kwargs)\n        context['roles'] = Role.objects.all()\n        context['venue_list'] = Venue.objects.all()\n        context['festival_list'] = Festival.objects.all()\n        # And so on for more models\n        return context\n</code></pre>\n\n<p>and in my urls.py</p>\n\n<pre><code>url(r'^$', \n    IndexView.as_view(),\n    name=\"home_list\"\n        ),\n</code></pre>\n"
+          },
+          {
+            "answer_id": 16624939,
+            "question_id": 12187751,
+            "body": "<p>If you want to build it on Django 1.5 you will be able to utilize stable version of CBVs. Please find code below.</p>\n\n<p>Great doc you can find here <a href=\"https://docs.djangoproject.com/en/dev/topics/class-based-views/mixins/\" rel=\"noreferrer\">https://docs.djangoproject.com/en/dev/topics/class-based-views/mixins/</a></p>\n\n<pre><code>class ProductsCategoryList(ListView):\n    context_object_name = 'products_list'\n    template_name = 'gallery/index_newborn.html'\n\n    def get_queryset(self):\n        self.category = get_object_or_404(Category, name=self.args[0])\n        return Products.objects.filter(category=self.category)\n\n    def get_context_data(self, **kwargs):\n        kwargs['category'] = Category.objects.all()\n        # And so on for more models\n        return super(ProductsCategoryList, self).get_context_data(**kwargs)\n</code></pre>\n"
+          }
+        ],
+        "is_answered": true,
+        "answer_count": 3,
+        "last_activity_date": 1626678342,
+        "question_id": 12187751,
+        "title": "Django Pass Multiple Models to one Template",
+        "body": "<p>I am building an address book that includes the relationships between entries, etc. I have separate models for Individuals, Companies, Venues, and Roles. On my index page I would like to list all of the instances of each model and then filter them. So that a person could easily search and find an entry. I have been able to list a single model using generic views and use get_extra_context to show one more model:</p>\n\n<pre><code>#views.py\n\n class IndividualListView(ListView):\n\n    context_object_name = \"individual_list\"\n    queryset = Individual.objects.all()\n    template_name='contacts/individuals/individual_list.html'\n\n\nclass IndividualDetailView(DetailView):\n\n    context_object_name = 'individual_detail'\n    queryset = Individual.objects.all()\n    template_name='contacts/individuals/individual_details.html'\n\n    def get_context_data(self, **kwargs):\n        context = super(IndividualDetailView, self).get_context_data(**kwargs)\n        context['role'] = Role.objects.all()\n        return context\n</code></pre>\n\n<p>I am also able to list a single model using a custom view:</p>\n\n<pre><code>#views.py\ndef object_list(request, model):\n    obj_list = model.objects.all()\n    template_name = 'contacts/index.html'\n    return render_to_response(template_name, {'object_list': obj_list}) \n</code></pre>\n\n<p>Here are the urls.py for both of these tests:</p>\n\n<pre><code>(r'^$', views.object_list, {'model' : models.Individual}),\n\n(r'^individuals/$', \n    IndividualListView.as_view(),\n        ),\n(r'^individuals/(?P&lt;pk&gt;\\d+)/$',\n    IndividualDetailView.as_view(),\n\n         ),\n</code></pre>\n\n<p>So my question is \"How do I modify this to pass more then one model to the template?\" Is it even possible? All of the similar questions on StackOverflow only ask about two models (which can be solved using get_extra_context). </p>\n"
+      }
+    ],
+    "has_more": false,
+    "quota_max": 10000,
+    "quota_remaining": 9654
+  }

@@ -1,0 +1,41 @@
+{
+    "items": [
+      {
+        "tags": [
+          "django",
+          "docker",
+          "heroku",
+          "docker-compose",
+          "dockerfile"
+        ],
+        "comments": [
+          {
+            "post_id": 55969407,
+            "comment_id": 98592051,
+            "body": "That linked answer is just wrong. You should <b>never</b> be using runserver for production, whether or not you&#39;re in a Docker container. You <b>do</b> need gunicorn."
+          }
+        ],
+        "answers": [
+          {
+            "answer_id": 55996563,
+            "question_id": 55969407,
+            "body": "<p>Quick solution is to change your Procfile to this:</p>\n\n<pre><code>web: python subfolder/manage.py runserver 0.0.0.0:$PORT\n</code></pre>\n\n<p>That would work, but keep in mind that you are using the development server on production, which is a <strong>really bad idea</strong>! But if you are just toying around, that's ok.</p>\n\n<p>However, if you're using this as a production app with real data, you should use a real production server. Then your Procfile would look like this:</p>\n\n<pre><code>web: gunicorn yourapp.wsgi --log-file -\n</code></pre>\n"
+          },
+          {
+            "answer_id": 68572201,
+            "question_id": 55969407,
+            "body": "<p>The Answer is not correct.</p>\n<p>If you use container with Dockerfile, you do not need any Profile.</p>\n<p>Just use the $PORT variable to let heroku to determine which port to use.</p>\n<p><a href=\"https://help.heroku.com/PPBPA231/how-do-i-use-the-port-environment-variable-in-container-based-apps\" rel=\"nofollow noreferrer\">https://help.heroku.com/PPBPA231/how-do-i-use-the-port-environment-variable-in-container-based-apps</a></p>\n"
+          }
+        ],
+        "is_answered": true,
+        "answer_count": 2,
+        "last_activity_date": 1627545433,
+        "question_id": 55969407,
+        "title": "Docker + Django + PostgreSQL + Heroku = Failed to bind to $PORT within 60 seconds",
+        "body": "<p>So I am building a Dockerized Django project and I want to deploy it to Heroku, but I am having a lot of issues. My issues are exactly the same as this post:\n<a href=\"https://stackoverflow.com/questions/46225801/docker-django-postgres-add-on-heroku/46229012#46229012\">Docker + Django + Postgres Add-on + Heroku</a> </p>\n\n<p>Except I cannot use CMD python3 manage.py runserver 0.0.0.0:$PORT since I receive an invalid port pair error.</p>\n\n<p>I'm just running </p>\n\n<pre><code>heroku container:push web\nheroku container:release web\nheroku open\n</code></pre>\n\n<p>After going to the site it stays loading until it says an error occurred. My log shows the following:</p>\n\n<pre><code> System check identified no issues (0 silenced).\n2019-05-03T11:38:47.708761+00:00 app[web.1]: May 03, 2019 - 11:38:47\n2019-05-03T11:38:47.709011+00:00 app[web.1]: Django version 2.2.1, using settings 'loan_app.settings.heroku'\n2019-05-03T11:38:47.709012+00:00 app[web.1]: Starting development server at http://0.0.0.0:8000/\n2019-05-03T11:38:47.709014+00:00 app[web.1]: Quit the server with CONTROL-C.\n2019-05-03T11:38:55.505334+00:00 heroku[router]: at=error code=H20 desc=\"App boot timeout\" method=GET path=\"/\" host=albmej-loan-application.herokuapp.com request_id=9037f839-8421-46f2-943a-599ec3cc6cb6 fwd=\"129.161.215.240\" dyno= connect= service= status=503 bytes= protocol=https\n2019-05-03T11:39:45.091840+00:00 heroku[web.1]: State changed from starting to crashed\n2019-05-03T11:39:45.012262+00:00 heroku[web.1]: Error R10 (Boot timeout) -&gt; Web process failed to bind to $PORT within 60 seconds of launch\n2019-05-03T11:39:45.012440+00:00 heroku[web.1]: Stopping process with SIGKILL\n2019-05-03T11:39:45.082756+00:00 heroku[web.1]: Process exited with status 137\n</code></pre>\n\n<p>The app works locally through a virtual environment and using Docker but just not on Heroku. Not sure what else to try. You can find my code at: <a href=\"https://github.com/AlbMej/Online-Loan-Application\" rel=\"nofollow noreferrer\">https://github.com/AlbMej/Online-Loan-Application</a></p>\n\n<p>Maybe I have some glaring problems in my Dockerfile or docker-compose.yml</p>\n"
+      }
+    ],
+    "has_more": false,
+    "quota_max": 10000,
+    "quota_remaining": 9651
+  }

@@ -1,0 +1,33 @@
+{
+    "items": [
+      {
+        "tags": [
+          "node.js",
+          "json",
+          "http",
+          "postman"
+        ],
+        "answers": [
+          {
+            "answer_id": 67903709,
+            "question_id": 67901902,
+            "body": "<p><code>http.get()</code> does exactly what Postman do.</p>\n<p>If you want the data in Postman, just call <code>url</code> in it.</p>\n"
+          },
+          {
+            "answer_id": 67903920,
+            "question_id": 67901902,
+            "body": "<p>I'm not sure if I understand it correctly but here's what I can say</p>\n<ol>\n<li>Download and install postman from <a href=\"https://www.postman.com/downloads\" rel=\"nofollow noreferrer\">here</a></li>\n<li>The UI is simple, it has tabs like browsers, create a new tab(request)</li>\n<li>Default http method is Get so you don't need to change it. type your URL click Send button.</li>\n<li>you can add Headers, etc...</li>\n</ol>\n<p><a href=\"https://i.stack.imgur.com/ucq1P.png\" rel=\"nofollow noreferrer\"><img src=\"https://i.stack.imgur.com/ucq1P.png\" alt=\"The Showcase\" /></a></p>\n"
+          }
+        ],
+        "is_answered": false,
+        "answer_count": 2,
+        "last_activity_date": 1623240765,
+        "question_id": 67901902,
+        "title": "how to watch the http requested data using postman",
+        "body": "<p>i have got the data by making the following http request , currently i am doing console.log() , but how to see the data in postman.</p>\n<pre><code>function getProducts() {\n  http\n    .get(url, (res) =&gt; {\n      let body = &quot;&quot;;\n      res.on(&quot;data&quot;, (chunk) =&gt; {\n        body += chunk;\n      });\n      res.on(&quot;end&quot;, () =&gt; {\n        try {\n          let json = JSON.parse(body);\n          console.log(json);\n        } catch (error) {\n          console.error(error.message);\n        }\n      });\n    })\n    .on(&quot;error&quot;, (error) =&gt; {\n      console.error(error.message);\n    });\n} \n</code></pre>\n"
+      }
+    ],
+    "has_more": false,
+    "quota_max": 10000,
+    "quota_remaining": 9641
+  }

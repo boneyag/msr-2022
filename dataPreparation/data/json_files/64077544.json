@@ -1,0 +1,37 @@
+{
+    "items": [
+      {
+        "tags": [
+          "python",
+          "django",
+          "model-view-controller"
+        ],
+        "answers": [
+          {
+            "answer_id": 64077714,
+            "question_id": 64077544,
+            "body": "<p>if the Many to many relation is given to other models, the related_name attribute specifies the name of the reverse relation from the User model back to your model.</p>\n<p>But in this case ..... both models are same</p>\n<p>So you try this</p>\n<p>u1 = User.objects.get(pk=1)\nu1.followers.all()</p>\n"
+          },
+          {
+            "answer_id": 64078409,
+            "question_id": 64077544,
+            "body": "<p>I think the Django just doesn't allow us to give a related_name when the field is referencing itself.</p>\n<p>For this specific task, I found this post is useful. <a href=\"https://stackoverflow.com/questions/40069192/django-models-database-design-for-user-and-follower\">Django models: database design for user and follower</a></p>\n<p>What they essentially do is create another model called Following(), and use it to store the relationship.</p>\n<pre><code>class Following(models.Model):\n    target = models.ForeignKey('User', on_delete=models.CASCADE, related_name = &quot;followers&quot;)\n    follower = models.ForeignKey('User', on_delete=models.CASCADE, related_name = &quot;targets&quot;)\n</code></pre>\n"
+          },
+          {
+            "answer_id": 68307625,
+            "question_id": 64077544,
+            "body": "<p>Try this out <a href=\"https://docs.djangoproject.com/en/dev/ref/models/fields/#django.db.models.ManyToManyField.symmetrical\" rel=\"nofollow noreferrer\">https://docs.djangoproject.com/en/dev/ref/models/fields/#django.db.models.ManyToManyField.symmetrical</a>.</p>\n<p>It should looks like this</p>\n<pre class=\"lang-py prettyprint-override\"><code>class User(AbstractUser):\n    followers = models.ManyToManyField(\n        'self',\n        symmetrical=False,\n        related_name='following',\n    )\n</code></pre>\n"
+          }
+        ],
+        "is_answered": false,
+        "answer_count": 3,
+        "last_activity_date": 1625772519,
+        "question_id": 64077544,
+        "title": "Django related_name not working while using self reference in many-to-many field",
+        "body": "<p>I'm currently trying to create following relationship between users, so I used a many-to-many field in the User model to reference itself.</p>\n<pre><code>class User(AbstractUser):\n    followers = models.ManyToManyField('self', related_name='following')\n\n    def __str__(self):\n        return self.username\n</code></pre>\n<p>However, when I tested this model using shell and trying to access the related_name, it reported error has occurred.</p>\n<pre><code>&gt;&gt;&gt; u1 = User.objects.get(pk=1)\n&gt;&gt;&gt; u1.following.all()\nTraceback (most recent call last):\n  File &quot;&lt;console&gt;&quot;, line 1, in &lt;module&gt;\nAttributeError: 'User' object has no attribute 'following'\n</code></pre>\n<p>Now I'm really confused, and really need help or alternative ways of doing this.</p>\n"
+      }
+    ],
+    "has_more": false,
+    "quota_max": 10000,
+    "quota_remaining": 9659
+  }

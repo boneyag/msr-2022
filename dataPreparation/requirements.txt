@@ -1,0 +1,3 @@
+pycorenlp>=0.3.3
+nltk
+stackapi>=0.1.9

@@ -1,0 +1,64 @@
+{
+    "items": [
+      {
+        "tags": [
+          "django",
+          "django-models",
+          "orm"
+        ],
+        "comments": [
+          {
+            "post_id": 55292675,
+            "comment_id": 97314259,
+            "body": "I haven&#39;t tested this but I <i>think</i> you are supposed to exclusively access the through instance, i.e. <code>screw.recipecomponent_set.all()[0].amount</code>."
+          },
+          {
+            "post_id": 55292675,
+            "comment_id": 97314328,
+            "body": "Yeah, I tried to do this before as well -  <code>print(screw.recipecomponent_set.all()) Traceback (most recent call last):   File &quot;&lt;input&gt;&quot;, line 1, in &lt;module&gt; AttributeError: &#39;Product&#39; object has no attribute &#39;recipecomponent_set&#39;</code>"
+          },
+          {
+            "post_id": 55292675,
+            "comment_id": 97314355,
+            "body": "I am sorry, didn&#39;t notice that you have <code>related_name</code>s. Try <code>screw.ingredient.all()...</code> (not <code>ingredients</code>)."
+          },
+          {
+            "post_id": 55292675,
+            "comment_id": 97314373,
+            "body": "This one seems to return an empty set: <code>screw.ingredient.all() -&gt; &lt;QuerySet []&gt;</code>"
+          },
+          {
+            "post_id": 55292675,
+            "comment_id": 97314456,
+            "body": "Are you sure your <code>Product</code> instance (<code>screw</code>) has any <code>RecipeComponent</code> instances associated? I think you also name the relations a bit confusingly. Is <code>screw</code> a main item or an ingredient? If it is a main item you should use <code>screw.item.all()</code> (which looks, <i>confusing</i>, as I mentioned)."
+          },
+          {
+            "post_id": 55292675,
+            "comment_id": 97314888,
+            "body": "Yes. Screw is an instance of Product, which is related to Iron_bar as the Item of the RecipeComponent. You can see that in the main post."
+          }
+        ],
+        "answers": [
+          {
+            "answer_id": 55293391,
+            "question_id": 55292675,
+            "body": "<pre><code>screw.ingredients.all()[0]\n</code></pre>\n\n<p>Is a product, and if you try:</p>\n\n<pre><code> screw.ingredients.all()[0].amount\n</code></pre>\n\n<p>you're trying to access the <code>amount</code> attribute of <code>Product</code> which does not have. Hence the error:</p>\n\n<pre><code>&gt;&gt;&gt; AttributeError: 'Product' object has no attribute 'amount'.\n</code></pre>\n\n<p>If you want to get the amount describing some relation you can:</p>\n\n<pre><code>relation_data = RecipeComponent.objects.get(product=screw, ingredient=wood)\nrelation_data.amount  # The amount of wood for screw.\n</code></pre>\n\n<p>Or you want to know how many different ingredients has screw:</p>\n\n<pre><code>RecipeComponent.objects.filter(product=screw).count()\n</code></pre>\n"
+          },
+          {
+            "answer_id": 68429994,
+            "question_id": 55292675,
+            "body": "<p>You can create a method within your Product class that returns the amount of the given ingredient:</p>\n<pre><code>class Product(models.Model):\n    ...\n    ...\n    def get_amount_of_ingredient(self, ingredient):\n        try:\n            return RecipeComponent.objects.get(item=self, ingredient=ingredient).amount\n        except RecipeComponent.DoesNotExist:\n            return 0\n</code></pre>\n<p>Then call it from <code>screw</code> object:</p>\n<pre><code>screw.get_amount_of_ingredient(&quot;iron_rod&quot;)\n</code></pre>\n"
+          }
+        ],
+        "is_answered": false,
+        "answer_count": 2,
+        "last_activity_date": 1626618236,
+        "question_id": 55292675,
+        "title": "Django ORM: Many to Many Self-Reference with Through Model",
+        "body": "<p>I have a many-to-many self-referencing relationship that includes a through model. Products are composed of other Products, including an amount (I.E a screw is made from iron rods). I made the through model, although I can't seem to access the 'amount' field in the through model:</p>\n\n<p><strong>Model code:</strong></p>\n\n<pre><code>from django.db import models\n\n\nclass Product(models.Model):\n    name = models.CharField(max_length=200, unique=True)\n    produced = models.IntegerField(default=0)\n    speed = models.IntegerField()\n    type = models.CharField(max_length=200)\n    ingredients = models.ManyToManyField('self', through='RecipeComponent', symmetrical=False)\n\n    def __str__(self):\n        return self.name\n\n\nclass RecipeComponent(models.Model):\n    item = models.ForeignKey(Product, on_delete=models.CASCADE, related_name=\"item\")\n    ingredient = models.ForeignKey(Product, on_delete=models.CASCADE, related_name=\"ingredient\")\n    amount = models.IntegerField()\n\n    def __str__(self):\n        return str(self.amount) + \" of \" + self.ingredient.name\n</code></pre>\n\n<p>I've tried a number of other queries, but as you can see they seem to fail. I know I'm missing something but I can't put my finger on it.</p>\n\n<pre><code>screw.ingredients.all()\n&gt;&gt;&gt; &lt;QuerySet [&lt;Product: iron_rod&gt;]&gt;\nscrew.ingredients.all()[0].amount\n&gt;&gt;&gt; Traceback (most recent call last):\n&gt;&gt;&gt;     File \"&lt;input&gt;\", line 1, in &lt;module&gt;\n&gt;&gt;&gt;     AttributeError: 'Product' object has no attribute 'amount'\n</code></pre>\n"
+      }
+    ],
+    "has_more": false,
+    "quota_max": 10000,
+    "quota_remaining": 9653
+  }

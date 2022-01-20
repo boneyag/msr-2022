@@ -1,0 +1,20 @@
+{
+    "tags": [
+        "mysql",
+        "arrays",
+        "json"
+    ],
+    "answers": [
+        {
+            "answer_id": 68531190,
+            "question_id": 68529273,
+            "body": "<p>First what you need to do is to convert the items from the JSON array to rows.</p>\n<p>You can do that with the <a href=\"https://dev.mysql.com/doc/refman/8.0/en/json-table-functions.html\" rel=\"nofollow noreferrer\"><code>JSON_TABLE</code></a> MySQL function:</p>\n<pre><code>SELECT *\nFROM json_table('[&quot;foo&quot;, &quot;bar&quot;]', '$[*]' COLUMNS(item text PATH '$')) AS jt;\n</code></pre>\n<p>The resultset looks like the following:</p>\n<pre><code>+------+\n| item |\n+------+\n| foo  |\n| bar  |\n+------+\n</code></pre>\n<p>The next problem is to <a href=\"https://stackoverflow.com/a/5846102/221213\">calculate the distribution</a> of these values from the resultset.</p>\n<pre><code>SELECT item,\n       count(*) * 100.0 / sum(count(*)) OVER () AS percentage\nFROM json_table('[&quot;foo&quot;, &quot;bar&quot;]', '$[*]' COLUMNS(item text PATH '$')) AS jt\nGROUP BY item;\n</code></pre>\n<p>The resultset will look like this:</p>\n<pre><code>+------+------------+\n| item | percentage |\n+------+------------+\n| bar  |   50.00000 |\n| foo  |   50.00000 |\n+------+------------+\n</code></pre>\n<p>The final step is to join with the table:</p>\n<pre><code>SELECT item,\n       count(*) * 100.0 / sum(count(*)) OVER () AS percentage\nFROM your_table,\n     json_table(label, '$[*]' COLUMNS(item text PATH '$')) AS jt\nGROUP BY item;\n</code></pre>\n<p>And the result should be what you expected.</p>\n"
+        }
+    ],
+    "is_answered": true,
+    "answer_count": 1,
+    "last_activity_date": 1627307726,
+    "question_id": 68529273,
+    "title": "Avarage of json array values in mysql",
+    "body": "<p>I have <code>label</code> - its array of strings value (mysql <code>json</code> type) like: <code>[&quot;foo&quot;, &quot;bar&quot;]</code> and I would like to get avarage for those values like:\nExample 1</p>\n<pre><code>ID | LABEL\n1  | [&quot;foo&quot;]\n2  | [&quot;foo&quot;]\n3  | [&quot;foo&quot;]\n4  | [&quot;foo&quot;]\n</code></pre>\n<p>Output: <code>foo</code>: 100%</p>\n<p>Example 2</p>\n<pre><code>ID | LABEL\n1  | [&quot;foo&quot;]\n2  | [&quot;foo&quot;]\n3  | [&quot;bar&quot;]\n4  | [&quot;bar&quot;]\n</code></pre>\n<p>Output: <code>foo</code>: 50%\nOutput: <code>bar</code>: 50%</p>\n<p>Example 3</p>\n<pre><code>ID | LABEL\n1  | [&quot;foo&quot;, &quot;bar&quot;]\n2  | [&quot;foo&quot;, &quot;bar&quot;] \n</code></pre>\n<p>Output: <code>foo</code>: 50%\nOutput: <code>bar</code>: 50%</p>\n<p>How can I do it with single sql?</p>\n<p>its possible?</p>\n<p>I don't know which code should I use.</p>\n"
+}

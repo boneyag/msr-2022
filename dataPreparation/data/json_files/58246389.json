@@ -1,0 +1,73 @@
+{
+    "items": [
+      {
+        "tags": [
+          "python",
+          "regex"
+        ],
+        "comments": [
+          {
+            "post_id": 58246389,
+            "comment_id": 102864173,
+            "body": "What flavor of regex is this? Have you tried <code>^(?!See).*</code>"
+          },
+          {
+            "post_id": 58246389,
+            "comment_id": 102864179,
+            "body": "@MateenUlhaq Python"
+          },
+          {
+            "post_id": 58246389,
+            "comment_id": 102864214,
+            "body": "@MateenUlhaq How can I include that in my positive lookbehind?"
+          },
+          {
+            "post_id": 58246389,
+            "comment_id": 102864236,
+            "body": "Are there more examples of sentences you wish to match / not match? Because that seems to be the simplest regex for this case. Also remember that you can apply multiple passes of regexes if you really need. (It might make things easier.)"
+          },
+          {
+            "post_id": 58246389,
+            "comment_id": 102864264,
+            "body": "@MateenUlhaq Yea, I just made the test string smaller for simplicity. Just would like to keep existing code I&#39;m using, and to not match any <code>See</code> in the lookbehind"
+          },
+          {
+            "post_id": 58246389,
+            "comment_id": 102865011,
+            "body": "Are the characters <code>**</code> part of the sentence or are they an indication in the quesiton?"
+          }
+        ],
+        "answers": [
+          {
+            "answer_id": 58246503,
+            "question_id": 58246389,
+            "body": "<p>Try</p>\n\n<pre><code>(?i)(?&lt;=\\D)(?&lt;!See )Item.+?1A.+?Risk Factors(?=\\D)(.+?)(?=Item 1B|$)\n</code></pre>\n\n<p>It means to have something different of a digit before <code>(?&lt;=\\D)</code> but also refusing the \"See \" thing <code>(?&lt;!See )</code>.</p>\n"
+          },
+          {
+            "answer_id": 58246773,
+            "question_id": 58246389,
+            "body": "<p>I'd recommend antoher pattern <code>(?&lt;=\\*\\*).+?(?=\\*\\*)</code></p>\n\n<p>Explanation:</p>\n\n<p><code>(?&lt;=\\*\\*)</code> - positive lookbehind: assert what preceds is <code>**</code></p>\n\n<p><code>.+?</code> - match one or more characters (non-greedy)</p>\n\n<p><code>(?=\\*\\*)</code> - positive lookahead: assert what follows is <code>**</code></p>\n\n<p><a href=\"https://regex101.com/r/Rf05PW/1\" rel=\"nofollow noreferrer\">Demo</a></p>\n"
+          },
+          {
+            "answer_id": 58247185,
+            "question_id": 58246389,
+            "body": "<p>If you want to add a quantifier <code>)(?&lt;!\\bSee\\b.*)</code> in the lookbehind, you could use the <a href=\"https://pypi.org/project/regex/\" rel=\"nofollow noreferrer\">PyPi regex module</a>.</p>\n\n<pre><code>(?&lt;=\\D)(?&lt;!\\bSee\\b.*)Item.+?1A.+?Risk Factors(?=\\D)(.+?)(?=Item 1B|$)\n</code></pre>\n\n<p><a href=\"https://rextester.com/FXZ19974\" rel=\"nofollow noreferrer\">Python demo</a></p>\n\n<p>Assuming the <code>**</code> are there to indicate the difference between the sentences you can see the the second one is matched due to the <code>**</code> at the end.</p>\n\n<p>For example</p>\n\n<pre><code>import regex\n\npattern = r\"(?i)(?&lt;=\\D)(?&lt;!\\bSee\\b.*)Item.+?1A.+?Risk Factors(?=\\D)(.+?)(?=Item 1B|$)\"\ntest_str = (\"See Item 1A. Risk Factors – Regulatory, Compliance and Legal on page 13.\\n\"\n            \"**Here Item 1A. Risk Factors – Regulatory, Compliance and Legal on page 13.**\")\nm = regex.search(pattern, test_str)\nprint(m.group())\n</code></pre>\n\n<p>Output</p>\n\n<pre><code>Item 1A. Risk Factors – Regulatory, Compliance and Legal on page 13.**\n</code></pre>\n\n<p>Another option could be to match what you don't want and capture what you want to keep using an alternation. </p>\n\n<p>Match a whole line where <code>See</code> comes before <code>Item</code>, and capture in <strong>group 1</strong> using the pattern with the lookbehind asserting not a digit.</p>\n\n<pre><code>(?:^(?:(?!\\bItem\\b.)*)See\\b.*|((?&lt;=\\D)Item.+?1A.+?Risk Factors(?=\\D).+?(?=Item 1B|$)))\n</code></pre>\n\n<p><a href=\"https://regex101.com/r/vOuAK1/1\" rel=\"nofollow noreferrer\">Regex demo</a></p>\n"
+          },
+          {
+            "answer_id": 68578349,
+            "question_id": 58246389,
+            "body": "<p>you can use a negative lookbehind :</p>\n<pre><code>(?&lt;!See ) \n</code></pre>\n<p>will not match if &quot;See &quot; is before the sentence</p>\n"
+          }
+        ],
+        "is_answered": false,
+        "answer_count": 4,
+        "last_activity_date": 1627570895,
+        "question_id": 58246389,
+        "title": "How to ignore a specific word in lookbehind?",
+        "body": "<p>Full string:</p>\n\n<pre><code>See Item 1A. Risk Factors – Regulatory, Compliance and Legal on page 13.\n**Here Item 1A. Risk Factors – Regulatory, Compliance and Legal on page 13.**\n</code></pre>\n\n<p>I'm using this code to get the sentence in <code>**</code>:</p>\n\n<pre><code>(?i)(?&lt;=\\D|![see])Item.+?1A.+?Risk Factors(?=\\D)(.+?)(?=Item 1B|$)\n</code></pre>\n\n<p>by giving the specific word <code>See</code> to ignore it.</p>\n\n<p>But it's still taking both sentences.</p>\n"
+      }
+    ],
+    "has_more": false,
+    "quota_max": 10000,
+    "quota_remaining": 9670
+  }

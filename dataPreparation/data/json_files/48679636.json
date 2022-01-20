@@ -1,0 +1,32 @@
+{
+    "items": [
+      {
+        "tags": [
+          "c#",
+          "json",
+          "enums"
+        ],
+        "answers": [
+          {
+            "answer_id": 48679878,
+            "question_id": 48679636,
+            "body": "<p>You can implement a custom <code>Converter</code> deriving from <code>StringEnumConverter</code>:</p>\n\n<pre><code>public class UserTypeEnumConverter : StringEnumConverter\n{\n    public override bool CanConvert(Type objectType)\n    {\n        return objectType == typeof(UserType);\n    }\n\n    public override object ReadJson(JsonReader reader, \n                                    Type objectType, \n                                    object existingValue, \n                                    JsonSerializer serializer)\n    {\n        if (reader.TokenType == JsonToken.Null)\n        {\n            var isNullable = (Nullable.GetUnderlyingType(objectType) != null);\n            if (!isNullable)\n            {\n                throw new JsonSerializationException();\n            }\n            return null;\n        }\n\n        var token = JToken.Load(reader);\n        var value = token.ToString();\n        if (string.Equals(value, \"chump\", StringComparison.OrdinalIgnoreCase))\n        {\n            return UserType.Citizen;\n        }\n        else\n        {\n            return base.ReadJson(reader, objectType, existingValue, serializer);\n        }               \n    }\n}\n</code></pre>\n\n<p>The converter handles the case when the underlying type is nullable as well and is invoked only when the type of property declared on the deserialized class is <code>UserType</code>. It then checks if the value being parsed is the \"deprecated\" one and if not, it delegates the reading to the base <code>StringEnumConverter</code>.</p>\n"
+          },
+          {
+            "answer_id": 48679892,
+            "question_id": 48679636,
+            "body": "<p>In your <code>Enum</code> just add the <a href=\"https://msdn.microsoft.com/en-us/library/system.runtime.serialization.enummemberattribute(v=vs.110).aspx\" rel=\"noreferrer\"><code>EnumMember</code></a> attribute which specify the value for serialization/deserialization process.</p>\n\n<pre><code>public enum UserType\n{\n    President,\n    VicePresident,\n\n    [EnumMember(Value = \"chump\")]\n    Citizen  // Chump maps to Citizen, now.\n}\n</code></pre>\n\n<p>The property <code>userType</code> will be <code>Citizen</code> when, in your json, the <code>userType</code> property is equal to <code>\"Chump\"</code> or <code>\"Citizen\"</code>.</p>\n\n<p>Remember to add the <code>System.Runtime.Serialization</code> reference to your project.</p>\n\n<h2>Edit</h2>\n\n<p>I noticed that the check of the <code>Value</code> property of <code>EnumMember</code> attribute is case-sensitive. So you can't use <code>\"Chump\"</code> if in your json you have <code>\"chump\"</code>. To solve this problem you can use a custom <code>StringEnumConverter</code>.</p>\n\n<pre><code>public class UserTypeEnumConverter : StringEnumConverter\n{\n    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)\n    {\n        var userTypeType = typeof(UserType);\n        if (objectType == userTypeType)\n        {\n            var value = reader.Value.ToString().ToLower();\n\n            foreach (var item in Enum.GetNames(userTypeType))\n            {\n                var memberValue = GetEnumMemberValue(userTypeType.GetMember(item)[0]);\n                if (memberValue != null &amp;&amp; memberValue.ToLower() == value)\n                {\n                    return Enum.Parse(userTypeType, item);\n                }\n            }\n        }\n\n        return base.ReadJson(reader, objectType, existingValue, serializer);\n    }\n}\n\nprivate static string GetEnumMemberValue(MemberInfo memberInfo)\n{\n    var attributes = memberInfo.GetCustomAttributes(typeof(EnumMemberAttribute), inherit: false);\n\n    if (attributes.Length == 0) return null;\n\n    return ((EnumMemberAttribute)attributes[0]).Value;\n}\n</code></pre>\n\n<p>In the above code, I check only the <code>EnumMember</code> attribute because the <code>UserType</code>'s members case-insensitive check is already done by the default <code>StringEnumConvert</code>.</p>\n\n<p>Note that this converter will work only for your <code>UserType</code> enum beacuse of the check:</p>\n\n<pre><code>var userTypeType = typeof(UserType);\nif (objectType == userTypeType)\n{\n</code></pre>\n\n<p>Replace the <code>JsonSerializerSettings</code> initialization with:</p>\n\n<pre><code>internal static JsonSerializerSettings JsonSerializerSettings =&gt; new JsonSerializerSettings\n{\n    Converters = new JsonConverter[]\n    {\n        new UserTypeEnumConverter()\n    },\n    Formatting = Formatting.Indented\n};\n</code></pre>\n\n<p>I assumed that <code>Vice-President</code> enumerator is <code>VicePresident</code> in <code>UserType</code>.</p>\n"
+          }
+        ],
+        "is_answered": true,
+        "answer_count": 2,
+        "last_activity_date": 1626010465,
+        "question_id": 48679636,
+        "title": "JSON.NET - custom enum handling at deserialization",
+        "body": "<p>We have a JSON that we can deserialize into a custom domain model, no problems at all. It includes a property which is a custom enum:</p>\n<pre><code>public enum UserType\n{\n    President,\n    Chump\n}\n</code></pre>\n<p>We've now changed our enum class but still need to <em>accept and deserialize</em> the previous values of any JSON's that arrive. It's like we now have two versions of our JSON</p>\n<pre><code>public enum UserType\n{\n    President,\n    Vice-President,\n    Citizen  // Chump maps to Citizen, now.\n}\n</code></pre>\n<p>and in the json itself..</p>\n<p><code>&quot;userType&quot;: &quot;chump&quot;; // needs to map to Citizen</code></p>\n<p>I'm not sure how to do this.</p>\n<p>Is this using <code>JsonConverter</code> ?</p>\n<p>Also, this is our custom settings we use for all our serialization and deserializtion. NOTE: we serialize any enum to it's <code>string</code> description/value, not it's <code>int</code> value.</p>\n<pre><code>internal static JsonSerializerSettings JsonSerializerSettings =&gt; new JsonSerializerSettings\n{\n    Converters = new JsonConverter[]\n    {\n        new StringEnumConverter()\n    },\n    Formatting = Formatting.Indented\n};\n</code></pre>\n"
+      }
+    ],
+    "has_more": false,
+    "quota_max": 10000,
+    "quota_remaining": 9636
+  }

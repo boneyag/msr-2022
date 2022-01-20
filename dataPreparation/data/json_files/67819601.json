@@ -1,0 +1,49 @@
+{
+    "items": [
+      {
+        "tags": [
+          "javascript",
+          "regex",
+          "split"
+        ],
+        "comments": [
+          {
+            "post_id": 67819601,
+            "comment_id": 119873739,
+            "body": "First of all, don&#39;t use <code>^</code> and <code>$</code> anchors unless you&#39;re trying to match the entire string. Second, you probably should use a Lookahead if you want to keep the delimiter."
+          },
+          {
+            "post_id": 67819601,
+            "comment_id": 119873790,
+            "body": "Does this answer your question? <a href=\"https://stackoverflow.com/questions/12001953/javascript-and-regex-split-string-and-keep-the-separator\">Javascript and regex: split string and keep the separator</a>"
+          },
+          {
+            "post_id": 67819601,
+            "comment_id": 119873831,
+            "body": "Isn&#39;t the expected result <code>[&quot;91.240.109.42FrancePrestashop PI block 2021-06-02&quot;,   &quot;213.186.52.66FrancePrestaShop 2012-06-29&quot;]</code>?"
+          }
+        ],
+        "answers": [
+          {
+            "answer_id": 67819641,
+            "question_id": 67819601,
+            "body": "<p>Use <code>match</code> here, with the following regex pattern:</p>\n<pre class=\"lang-regex prettyprint-override\"><code>[\\s\\S]+?(?:\\d{4}-\\d{2}-\\d{2}|$)\n</code></pre>\n<p>This will match all content up until the first date, repeteadly through the text.</p>\n<p><div class=\"snippet\" data-lang=\"js\" data-hide=\"false\" data-console=\"true\" data-babel=\"false\">\r\n<div class=\"snippet-code\">\r\n<pre class=\"snippet-code-js lang-js prettyprint-override\"><code>var input = `91.240.109.42FrancePrestashop PI block\n2021-06-02213.186.52.66FrancePrestaShop\n2012-06-29`\nvar matches = input.match(/[\\s\\S]+?(?:\\d{4}-\\d{2}-\\d{2}|$)/g);\nconsole.log(matches);</code></pre>\r\n</div>\r\n</div>\r\n</p>\n<p>Note that I use logic such that should the input not end in a date, the final split value would still be included.</p>\n"
+          },
+          {
+            "answer_id": 67819751,
+            "question_id": 67819601,
+            "body": "<p>You can use</p>\n<p><div class=\"snippet\" data-lang=\"js\" data-hide=\"false\" data-console=\"true\" data-babel=\"false\">\r\n<div class=\"snippet-code\">\r\n<pre class=\"snippet-code-js lang-js prettyprint-override\"><code>const text = `91.240.109.42FrancePrestashop PI block\n2021-06-02213.186.52.66FrancePrestaShop\n2012-06-29`;\nconsole.log( text.split(/(?&lt;=\\d{4}-\\d{2}-\\d{2})/).map(x=&gt;x.replaceAll(\"\\n\",\" \")) )</code></pre>\r\n</div>\r\n</div>\r\n</p>\n<p>The <code>(?&lt;=\\d{4}-\\d{2}-\\d{2})</code> pattern is a positive lookbehind that matches a location that is immediately preceded with four digits, <code>-</code>, two digits, <code>-</code> and two digits.</p>\n<p>See <a href=\"https://regex101.com/r/bq0Xl7/2\" rel=\"nofollow noreferrer\">this regex demo</a>.</p>\n<p>With <code>.map(x=&gt;x.replaceAll(&quot;\\n&quot;,&quot; &quot;)</code>, you replace each LF Char with a space.</p>\n"
+          }
+        ],
+        "is_answered": true,
+        "answer_count": 2,
+        "last_activity_date": 1622716084,
+        "question_id": 67819601,
+        "title": "Split a string at every occurrence of a date format yyyy-mm-dd",
+        "body": "<p>I'm trying to split a string at every occurrence of a specific pattern.\nI have a string like this one:</p>\n<pre><code>91.240.109.42FrancePrestashop PI block\n2021-06-02213.186.52.66FrancePrestaShop\n2012-06-29\n</code></pre>\n<p>And I want to split the string at every occurrence of the date format <code>yyyy-mm-dd</code> mantaining the date in the splitted array, so the result I want to obtain is this one:</p>\n<pre><code>[91.240.109.42FrancePrestashop PI block 2021-06-02,213.186.52.66FrancePrestaShop 2012-06-29]\n</code></pre>\n<p>I have tried to split based on the date format but it does not work:</p>\n<pre><code>var splitted_string= result.split(/^\\d{4}-\\d{2}-\\d{2}$/)\n</code></pre>\n"
+      }
+    ],
+    "has_more": false,
+    "quota_max": 10000,
+    "quota_remaining": 9665
+  }

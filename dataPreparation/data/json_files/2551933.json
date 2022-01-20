@@ -1,0 +1,146 @@
+{
+  "tags": [
+    "django"
+  ],
+  "answers": [
+    {
+      "score": 21,
+      "last_activity_date": 1521372826,
+      "last_edit_date": 1521372826,
+      "answer_id": 2551963,
+      "question_id": 2551933,
+      "body": "<p><code>request.session</code> is a dictionary like any other, so you just use the normal template mechanism for attributes and members:</p>\n\n<pre><code>{{ request.session.name }}\n</code></pre>\n\n<p>Don't forget to pass the request into the template context, or even better ensure you are using RequestContext and have the request context processor enabled. See <a href=\"https://docs.djangoproject.com/en/dev/ref/templates/api/#rendering-a-context\" rel=\"noreferrer\">the documentation</a>.</p>\n"
+    },
+    {
+      "score": 8,
+      "last_activity_date": 1336097384,
+      "last_edit_date": 1336097384,
+      "answer_id": 2551965,
+      "question_id": 2551933,
+      "body": "<p>You can pass a <code>request</code> variable to a template and there use:</p>\n\n<pre><code>{{ request.session.name }}\n</code></pre>\n"
+    },
+    {
+      "comments": [
+        {
+          "score": 10,
+          "creation_date": 1356671382,
+          "post_id": 2551976,
+          "comment_id": 19440851,
+          "body": "See <a href=\"http://stackoverflow.com/questions/2246725/django-template-context-processors#answer-9233283\" title=\"django template context processors%23answer 9233283\">stackoverflow.com/questions/2246725/&hellip;</a> for how to add django.core.context_processors.request to your template context processors without overriding the defaults."
+        },
+        {
+          "score": 0,
+          "creation_date": 1405190015,
+          "post_id": 2551976,
+          "comment_id": 38333963,
+          "body": "if i use HttpResponse instead of render will i still be able to get the session attribute in my template.I am confused please tell me"
+        },
+        {
+          "score": 0,
+          "creation_date": 1405254983,
+          "post_id": 2551976,
+          "comment_id": 38346999,
+          "body": "@cafebabe1991 What do you mean? The <code>HttpResponse</code> class doesn&#39;t deal with templates at all, so the question doesn&#39;t seem relevant..."
+        },
+        {
+          "score": 0,
+          "creation_date": 1405255097,
+          "post_id": 2551976,
+          "comment_id": 38347031,
+          "body": "Ya, actually i did an experiment to realise that at the end.Bad question . sorry"
+        }
+      ],
+      "score": 239,
+      "last_activity_date": 1633926339,
+      "last_edit_date": 1633926339,
+      "answer_id": 2551976,
+      "question_id": 2551933,
+      "body": "<p>You need to add <a href=\"http://docs.djangoproject.com/en/dev/ref/templates/api/#django-template-context-processors-request\" rel=\"nofollow noreferrer\"><code>django.template.context_processors.request</code></a> to your <a href=\"https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-TEMPLATE_CONTEXT_PROCESSORS\" rel=\"nofollow noreferrer\">template context processors</a>. Then you can access them like this:</p>\n<pre><code>{{ request.session.name }}\n</code></pre>\n<p>In case you are using custom views make sure you are passing a RequestContext instance. Example taken from <a href=\"http://docs.djangoproject.com/en/dev/ref/templates/api/#id1\" rel=\"nofollow noreferrer\">documentation</a>:</p>\n<pre><code>from django.shortcuts import render_to_response\nfrom django.template import RequestContext\n\ndef some_view(request):\n    # ...\n    return render_to_response('my_template.html',\n                              my_data_dictionary,\n                              context_instance=RequestContext(request))\n</code></pre>\n<p><strong>Update 2013:</strong> Judging by the upvotes I'm still receiving for this answer, people are still finding it helpful, more than three years after it was originally written. Please note however, that although the view code above is still valid, nowadays there is a much simpler way of doing this. <a href=\"https://docs.djangoproject.com/en/1.3/topics/http/shortcuts/\" rel=\"nofollow noreferrer\"><code>render()</code></a> is a function very similar to <code>render_to_response()</code>, but it uses <code>RequestContext</code> automatically, without a need to pass it explicitly:</p>\n<pre><code>from django.shortcuts import render\n\ndef some_view(request):\n    # ...\n    return render(request, 'my_template.html', my_data_dictionary)\n</code></pre>\n"
+    },
+    {
+      "comments": [
+        {
+          "score": 0,
+          "creation_date": 1389891220,
+          "post_id": 16243903,
+          "comment_id": 31865324,
+          "body": "I also had to add &#39;django.contrib.auth.context_processors.auth&#39; to the TEMPLATE_CONTEXT_PROCESSORS tuple."
+        }
+      ],
+      "score": 1,
+      "last_activity_date": 1367004784,
+      "answer_id": 16243903,
+      "question_id": 2551933,
+      "body": "<p>In your settins.py</p>\n\n<pre><code>TEMPLATE_CONTEXT_PROCESSORS = (\n    'django.core.context_processors.request',\n)\n</code></pre>\n\n<p>Your view, maybe look like this.</p>\n\n<pre><code>from django.shortcuts import render_to_response, render\nfrom django.http import HttpResponse, HttpResponseRedirect\nfrom django.template import RequestContext\n\n@login_required()\ndef index_admin(request):\n    return render_to_response('carteras/index_admin.html', {}, context_instance=RequestContext(request))\n</code></pre>\n"
+    },
+    {
+      "score": 2,
+      "last_activity_date": 1400908032,
+      "last_edit_date": 1400908032,
+      "answer_id": 23841352,
+      "question_id": 2551933,
+      "body": "<p>First print <code>request.session.keys()</code> then</p>\n\n<pre><code>request.session['_auth_user_id']\nrequest.session['_auth_user_backend']\n</code></pre>\n\n<p>You will get these two session variables.</p>\n"
+    },
+    {
+      "score": 1,
+      "last_activity_date": 1415177244,
+      "last_edit_date": 1415177244,
+      "answer_id": 26752724,
+      "question_id": 2551933,
+      "body": "<p>Continuing @Ludwik Trammer answer, How to add TEMPLATE_CONTEXT_PROCESSORS</p>\n\n<p>For django 1.6, in settings.py add TEMPLATE_CONTEXT_PROCESSORS referring the below code and then use <code>{{ request.session.name }}</code> in template files. </p>\n\n<pre><code>TEMPLATE_CONTEXT_PROCESSORS = (\"django.contrib.auth.context_processors.auth\",\n\"django.core.context_processors.debug\",\n\"django.core.context_processors.i18n\",\n\"django.core.context_processors.media\",\n\"django.core.context_processors.static\",\n\"django.core.context_processors.tz\",\n\"django.contrib.messages.context_processors.messages\",\n\"django.core.context_processors.request\")\n</code></pre>\n\n<p>Reference <a href=\"https://docs.djangoproject.com/en/1.6/ref/settings/#std:setting-TEMPLATE_CONTEXT_PROCESSORS\" rel=\"nofollow\">https://docs.djangoproject.com/en/1.6/ref/settings/#std:setting-TEMPLATE_CONTEXT_PROCESSORS</a></p>\n\n<p>Pls note that, you should use that complete code in settings. Using <code>\"django.core.context_processors.request\"</code> alone will result in overriding the default settings.</p>\n"
+    },
+    {
+      "score": 0,
+      "last_activity_date": 1421476381,
+      "last_edit_date": 1421476381,
+      "answer_id": 27975800,
+      "question_id": 2551933,
+      "body": "<p>Maybe a bit too late now. If you directly set <code>TEMPLATE_CONTEXT_PROCESSORS</code> in <code>settings.py</code>, you will lose all default <code>TEMPLATE_CONTEXT_PROCESSORS</code> value. Here is what I do in my <code>settings.py</code>:</p>\n\n<pre><code>from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as DEFAULT_TEMPLATE_CONTEXT_PROCESSORS\n\nTEMPLATE_CONTEXT_PROCESSORS = DEFAULT_TEMPLATE_CONTEXT_PROCESSORS + (\n    'django.core.context_processors.request',\n)\n</code></pre>\n"
+    },
+    {
+      "comments": [
+        {
+          "score": 2,
+          "creation_date": 1474760960,
+          "post_id": 36117870,
+          "comment_id": 66664171,
+          "body": "in Django 1.10, the <code>django.template.context_processors.request</code> was already in the setting file :D"
+        }
+      ],
+      "score": 12,
+      "last_activity_date": 1458499023,
+      "answer_id": 36117870,
+      "question_id": 2551933,
+      "body": "<p>I am using Django 1.9 (March 2016) and to get <code>{{ request.session.name}}</code> to work, my settings have this::</p>\n\n<pre><code>TEMPLATES = [\n{\n    'BACKEND': 'django.template.backends.django.DjangoTemplates',\n    'DIRS': [],\n    'APP_DIRS': True,\n    'OPTIONS': {\n        'context_processors': [\n            'django.template.context_processors.debug',\n            'django.template.context_processors.request',\n            'django.contrib.auth.context_processors.auth',\n            'django.contrib.messages.context_processors.messages',\n            ],\n        },\n    },\n]\n</code></pre>\n\n<p>The difference from the previous answers is: <code>'django.core.context_processors.request'</code> became <code>'django.template.context_processors.request'</code></p>\n"
+    },
+    {
+      "score": 5,
+      "last_activity_date": 1524739340,
+      "answer_id": 50040944,
+      "question_id": 2551933,
+      "body": "<p>the simplest implementation is using if loop :</p>\n\n<pre><code>{% if 'data' in request.session %}\n</code></pre>\n"
+    },
+    {
+      "score": 0,
+      "last_activity_date": 1626795124,
+      "answer_id": 68457592,
+      "question_id": 2551933,
+      "body": "<p>**</p>\n<h2 id=\"this-answer-is-for-those-using-django-3.0-and-above\">This answer is for those using Django 3.0 and above</h2>\n<p>**</p>\n<p>You don't need to pass the session variables from the views as the sessions are stored in django_sessions table in your database. So just use <code>return redirect('/')</code>to simulate passing none without errors.</p>\n<p>In index.html file:</p>\n<ul>\n<li><p>If there's only single data in the session variable, use</p>\n<p><code>{{ request.session.your_session_varaible_name }}</code></p>\n</li>\n<li><p>If you have multiple data in the session variable like a list, it can be accessed by</p>\n</li>\n</ul>\n<p><div class=\"snippet\" data-lang=\"js\" data-hide=\"false\" data-console=\"false\" data-babel=\"false\">\r\n<div class=\"snippet-code\">\r\n<pre class=\"snippet-code-html lang-html prettyprint-override\"><code>{% if 'cart_prod' in request.session %} {% for cart_products in request.session.cart_prod %}\n&lt;tr&gt;\n  &lt;td style=\"padding: 25px\"&gt;\n    {{ cart_products }}\n  &lt;/td&gt;\n  &lt;tr&gt;\n    {% endfor %} {% endif %}</code></pre>\r\n</div>\r\n</div>\r\n</p>\n"
+    },
+    {
+      "score": -1,
+      "last_activity_date": 1627559602,
+      "answer_id": 68575412,
+      "question_id": 2551933,
+      "body": "<p>{{ request.session.name_of_session_key }}</p>\n"
+    }
+  ],
+  "is_answered": true,
+  "answer_count": 11,
+  "score": 141,
+  "last_activity_date": 1633926339,
+  "creation_date": 1270029800,
+  "question_id": 2551933,
+  "title": "Django: accessing session variables from within a template?",
+  "body": "<p>If I set a session variable in Django, like: </p>\n\n<pre><code>request.session[\"name\"] = \"name\"\n</code></pre>\n\n<p>Is there a way I can access it from within a template, or do I have to retrieve it from within a view, and then pass it to a template?</p>\n\n<p>Asking because I have around 10 little session variables that I'd like to access within a template, and passing all 10 from the view to the template could get a bit messy. </p>\n\n<p>(I have to use session variables because it's a HttpResponseRedirect, but storing the variables in a database is overkill for my purposes.)</p>\n\n<p>So - any way to grab session variables directly within a template?</p>\n"
+}

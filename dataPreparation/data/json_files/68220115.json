@@ -1,0 +1,29 @@
+{
+  "tags": [
+    "java",
+    "json"
+  ],
+  "answers": [
+    {
+      "answer_id": 68220138,
+      "question_id": 68220115,
+      "body": "<p>Because you are using Json, there is no difference.\nYou can use the Option, you like more</p>\n"
+    },
+    {
+      "answer_id": 68220153,
+      "question_id": 68220115,
+      "body": "<p><code>toString()</code> returns string representation of property/object on which this method is called.\nWhenever we print an object reference, it invokes the <code>toString()</code> method internally as a result , it is not making difference.</p>\n"
+    },
+    {
+      "answer_id": 68220249,
+      "question_id": 68220115,
+      "body": "<p>When you have some Int or other type of data type variables in your model class and you want to parse it into a string so for that we use toString(), it will convert int or any other data variable into a string, in your case here you already have string so no need to change again and again and JSON uses string variables when it comes from backend so that the purpose.</p>\n"
+    }
+  ],
+  "is_answered": true,
+  "answer_count": 3,
+  "last_activity_date": 1625205443,
+  "question_id": 68220115,
+  "title": "Is toString() mandatory while accessing the individual element of a JSON object in Java",
+  "body": "<p>I am quite new to Java and trying to understand the effect of using <code>toString()</code> while accessing the individual <code>string</code> elements of JSON object in Java.</p>\n<p>Below are the steps followed:</p>\n<ol>\n<li>Parse the JSON data. Let's assume only string elements are there in parsed JSON data.</li>\n</ol>\n<pre><code>JSONParser parser = new JSONParser();\nJSONObject jsonObj = (JSONObject) parser.parse(json_data);\n</code></pre>\n<pre><code>{\n   &quot;firstname&quot; : &quot;new&quot;,\n   &quot;lastname&quot; : &quot;human&quot;,\n   &quot;id&quot; : &quot;some_id&quot;\n}\n</code></pre>\n<ol start=\"2\">\n<li>Try to access the individual elements.<br />\nAccess without <code>toString()</code>:<br />\n<code>Public static String firstname = jsonObj.get(&quot;firstname&quot;);</code><br />\nAccess with <code>toString()</code>:<br />\n<code>Public static String firstname = jsonObj.get(&quot;firstname&quot;).toString();</code></li>\n</ol>\n<p>I do not see a difference when I try to print the data.<br />\nHowever I would like to know the difference between the above 2 methods, and also will there be any issues if I use without <code>toString()</code> in this particular case.</p>\n<p>Appreciate your help.</p>\n<p>Thank you</p>\n"
+}

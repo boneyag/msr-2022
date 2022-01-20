@@ -1,0 +1,30 @@
+{
+    "items": [
+      {
+        "tags": [
+          "regex"
+        ],
+        "answers": [
+          {
+            "answer_id": 67321295,
+            "question_id": 67319772,
+            "body": "<ol>\n<li><p>Data that's captured in GA already WON'T BE AFFECTED by the filters. They're not retroactive.</p>\n</li>\n<li><p>If you want to remove fbclid then use the query string parameter exclusion feature: <a href=\"https://support.google.com/analytics/answer/1010249?hl=en\" rel=\"nofollow noreferrer\">https://support.google.com/analytics/answer/1010249?hl=en</a></p>\n</li>\n</ol>\n"
+          },
+          {
+            "answer_id": 67322881,
+            "question_id": 67319772,
+            "body": "<p>You can exclude that parameter from the <strong>View settings</strong>, you don't need a filter:</p>\n<p><a href=\"https://i.stack.imgur.com/s6YZ8.png\" rel=\"nofollow noreferrer\"><img src=\"https://i.stack.imgur.com/s6YZ8.png\" alt=\"enter image description here\" /></a></p>\n<p>However, as XTOTHEL says, the change will work from the day of saving onwards, not for historical data.</p>\n<p>Note: fbclid is not an UTM parameter. It comes from Facebook posts link.</p>\n<p>Real UTM parameters (utm_source, utm_medium, ...) are automatically removed from Google Analytics</p>\n"
+          }
+        ],
+        "is_answered": true,
+        "answer_count": 2,
+        "last_activity_date": 1620986756,
+        "question_id": 67319772,
+        "title": "Google Analytics Advanced filter to Combine / merge multiple instances of URL? Find &amp; Replace UTM parameters",
+        "body": "<p>I'm looking to use Advanced Filter Search and Replace on GA to combine all url instances of my blog page (multiple UTM parameters)</p>\n<p>so Urls like the following:</p>\n<p>/blogs/in-the-garden/diy-garden-bar-ideas-for-summer?mc_cid=etc.....\n/blogs/in-the-garden/diy-garden-bar-ideas-for-summer?fbclid=etc.....</p>\n<p>I want to filter as:\n/blogs/in-the-garden/diy-garden-bar-ideas-for-summer</p>\n<p>This is the plan for my filter:</p>\n<p>Request URI\nField A: ^(/blogs/in-the-garden/diy-garden-bar-ideas-for-summer)(?).*</p>\n<p>Request URI\nOutput To: $A1</p>\n<p>Is this written correctly? I'm new to Reg Ex</p>\n"
+      }
+    ],
+    "has_more": false,
+    "quota_max": 10000,
+    "quota_remaining": 9681
+  }

@@ -1,0 +1,31 @@
+{
+  "tags": [
+    "regex",
+    "qt"
+  ],
+  "answers": [
+    {
+      "score": 0,
+      "last_activity_date": 1407416946,
+      "answer_id": 25183416,
+      "question_id": 25182772,
+      "body": "<p>Not really sure nut I think you have to double escape the word boundary:</p>\n\n<pre><code>QRegExp navigation(\"^/(a|b|c)\\\\b\");\n</code></pre>\n"
+    },
+    {
+      "score": 1,
+      "last_activity_date": 1407418547,
+      "last_edit_date": 1407418547,
+      "answer_id": 25183463,
+      "question_id": 25182772,
+      "body": "<p>Have you already tried:</p>\n\n<pre><code>^/(a|b|c)$\n</code></pre>\n\n<hr>\n\n<p>With this regex engine you need to change it to:</p>\n\n<pre><code>/^\\/(a|b|c)$/gm\n</code></pre>\n\n<hr>\n\n<p>As Spidey wrote also this works:</p>\n\n<pre><code>/^\\/[abc]$/gm\n</code></pre>\n"
+    }
+  ],
+  "is_answered": true,
+  "answer_count": 2,
+  "score": 1,
+  "last_activity_date": 1407418547,
+  "creation_date": 1407415049,
+  "question_id": 25182772,
+  "title": "Regex does not match for exact pattern",
+  "body": "<p>I would like to match only the following pattern:</p>\n\n<pre><code>/a\n/b\n/c\n</code></pre>\n\n<p>and others should return false:</p>\n\n<pre><code>/a/foo\n/bX\n/c23\n</code></pre>\n\n<p>etc.</p>\n\n<p>For this I have the following code:</p>\n\n<pre><code>QRegExp navigation(\"^/(a|b|c)\\b\");\n</code></pre>\n\n<p>However <code>navigation.indexIn(str)</code> returns <code>-1</code></p>\n\n<p>How should I modify the code so that this returns a positive value?</p>\n"
+}
