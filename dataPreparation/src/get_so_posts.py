@@ -38,30 +38,6 @@ def collect_posts(list_of_ids):
             print('Error message:{}'.format(e.message))
 
 
-def collect_question_ids(tag):
-    SITE = StackAPI(name='stackoverflow', key=getenv('so-api'))
-    SITE.page_size = 100
-    SITE.max_pages = 7251
-
-    try:
-        questions = SITE.fetch('questions', tagged=tag, filter='!Oev7Wy_R1V2(F1uuwkGrHPDic2Cvgp8a5.Xdc1o.mub')
-        
-        items = questions.get('items')
-        
-        if items is not None:
-            with open('../data/question_ids/{}_new.txt'.format(tag), 'w') as wf:
-                for item in items:
-                    if item['answer_count'] > 0 and tag in item['tags']:
-                        wf.write(str(item['question_id']) + '\n')
-
-        print(questions.get('quota_remaining'))
-        print(questions.get('has_more'))
-
-    except StackAPIError as e:
-        print('Error code:{}'.format(e.code))
-        print('Error message:{}'.format(e.message))
-                
-
 def select_random_questions():
     files_already_read = []
     new_files_to_read = []
@@ -87,15 +63,6 @@ def select_random_questions():
     
     # print(new_files_to_read)
     return new_files_to_read
-                
-
-def select_question_ids_from_file():
-    question_ids = list()
-    with open("../data/old_question_ids/selected_questions.txt", "r") as file:
-        for line in file.readlines():
-            question_ids.append(int(line.strip()))
-
-    return question_ids
 
 
 def main():
